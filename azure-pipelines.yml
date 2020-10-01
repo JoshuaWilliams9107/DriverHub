@@ -29,5 +29,5 @@ steps:
   inputs:
     sshEndpoint: 'EC2 Instance'
     runOptions: 'commands'
-    commands: 'sudo mv  -v /home/ubuntu/repo/* /var/www/html/repo'
+    commands: 'sudo mv  -v /home/ubuntu/repoTemp/* /var/www/html/repo'
     readyTimeout: '20000'
