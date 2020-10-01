@@ -17,17 +17,17 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'EC2 Instance'
-    runOptions: 'commands'
-    commands: 'sudo -i'
-    failOnStdErr: false
-    readyTimeout: '20000'
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'EC2 Instance'
     sourceFolder: 'Research'
     contents: '**'
-    targetFolder: '/var/www/html/repo'
+    targetFolder: '/home/ubuntu/repoTemp'
+    cleanTargetFolder: true
+    readyTimeout: '20000'
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'EC2 Instance'
+    runOptions: 'commands'
+    commands: 'sudo mv  -v /home/ubuntu/repo/* /var/www/html/repo'
     readyTimeout: '20000'
