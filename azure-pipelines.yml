@@ -6,12 +6,6 @@
 
 trigger:
 - master
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'AWS EC2'
-    regionName: 'us-east-1'
-    bucketName: 'revision-bucket-code-deploy'
-    globExpressions: '**'
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -23,3 +17,9 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+- task: S3Upload@1
+  inputs:
+    awsCredentials: 'AWS EC2'
+    regionName: 'us-east-1'
+    bucketName: 'revision-bucket-code-deploy'
+    globExpressions: '**'
