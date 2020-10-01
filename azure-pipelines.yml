@@ -29,5 +29,9 @@ steps:
   inputs:
     sshEndpoint: 'EC2 Instance'
     runOptions: 'commands'
-    commands: 'sudo mv  -v /home/ubuntu/repoTemp/* /var/www/html/repo'
+    commands: |
+      sudo rm /var/www/html/repo/*
+      sudo mv  -v /home/ubuntu/repoTemp/* /var/www/html/repo
+      cd /var/www/html/testing/scripts
+      sudo ./reboot_nginx.sh
     readyTimeout: '20000'
