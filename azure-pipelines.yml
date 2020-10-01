@@ -20,6 +20,7 @@ steps:
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'EC2 Instance'
+    sourceFolder: 'Research'
     contents: '**'
     targetFolder: '/var/www/html/repo'
     readyTimeout: '20000'
