@@ -32,6 +32,6 @@ steps:
     commands: |
       sudo rm /var/www/html/repo/*
       sudo mv  -v /home/ubuntu/repoTemp/* /var/www/html/repo
-      cd /var/www/html/testing/scripts
-      sudo ./reboot_nginx.sh
+      sudo service project-server stop
+      sudo service project-server start
     readyTimeout: '20000'
