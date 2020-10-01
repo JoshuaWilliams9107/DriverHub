@@ -23,3 +23,4 @@ steps:
     regionName: 'us-east-1'
     bucketName: 'revision-bucket-code-deploy'
     globExpressions: '**'
+    createBucket: true
