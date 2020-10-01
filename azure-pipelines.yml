@@ -1,11 +1,5 @@
 # Starter pipeline
-- task: CodeDeployDeployApplication@1
-  inputs:
-    awsCredentials: 'AWS EC2'
-    regionName: 'us-east-1'
-    applicationName: 'Code-Deploy'
-    deploymentGroupName: 'EC2-Instance'
-    deploymentRevisionSource: 'workspace'
+
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -24,3 +18,12 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+- task: CodeDeployDeployApplication@1
+  inputs:
+    awsCredentials: 'AWS EC2'
+    regionName: 'us-east-1'
+    applicationName: 'Code-Deploy'
+    deploymentGroupName: 'EC2-Instance'
+    deploymentRevisionSource: 'workspace'
+    revisionBundle: '/'
+    bucketName: 'revision-bucket-code-deploy'
