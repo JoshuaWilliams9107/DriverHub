@@ -31,7 +31,6 @@ steps:
     runOptions: 'commands'
     commands: |
       sudo rsync -av /home/ubuntu/repoTemp/ /home/aj/project
-      sudo service project-server stop
-      sudo service project-server start
+      sudo service project-server restart
     failOnStdErr: false
     readyTimeout: '20000'
