@@ -17,10 +17,9 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
-- task: S3Upload@1
+- task: CopyFilesOverSSH@0
   inputs:
-    awsCredentials: 'AWS EC2'
-    regionName: 'us-east-1'
-    bucketName: 'revision-bucket-code-deploy'
-    globExpressions: '**'
-    createBucket: true
+    sshEndpoint: 'EC2 Instance'
+    contents: '**'
+    targetFolder: '/var/www/html/repo'
+    readyTimeout: '20000'
