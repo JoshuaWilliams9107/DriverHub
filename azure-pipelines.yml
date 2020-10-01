@@ -30,7 +30,7 @@ steps:
     sshEndpoint: 'EC2 Instance'
     runOptions: 'commands'
     commands: |
-      sudo rm /home/aj/project/documentRoot/*
+      sudo rm /home/aj/project/documentRoot/*.*
       sudo rm /home/aj/project/server/*
       sudo mv  -v /home/ubuntu/repoTemp/* /home/aj/project
       sudo service project-server stop
