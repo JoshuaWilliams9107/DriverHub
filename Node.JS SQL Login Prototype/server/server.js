@@ -27,7 +27,7 @@ app.post('/submit-form', (req, res) => {
   username = req.body.username;
   password = req.body.password;
 
-  let sql = "SELECT * FROM Drivers WHERE Username= \"" + username + "\"";
+  let sql = "SELECT * FROM User WHERE Username= \"" + username + "\"";
 
   con.query(sql, function (err, result) {
    if (err) throw err;
