@@ -34,7 +34,7 @@ app.post('/submit-form', (req, res) => {
    if(result.length != 0){
     res.send("I did find that in the database");
   }else{
-    res.send('I did not find that in the database');
+    res.send('I did not find that in the database Also this worked');
   }
   });
   //if(result[0].username == user){
