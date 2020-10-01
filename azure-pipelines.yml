@@ -30,7 +30,7 @@ steps:
     sshEndpoint: 'EC2 Instance'
     runOptions: 'commands'
     commands: |
-      find /home/aj/project/documentRoot -maxdepth 1 -type f -exec rm -iv {} \;
+      find /home/aj/project/documentRoot -maxdepth 1 -type f -delete
       sudo rm /home/aj/project/server/*
       sudo mv  -v /home/ubuntu/repoTemp/* /home/aj/project
       sudo service project-server stop
