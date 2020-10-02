@@ -82,9 +82,11 @@ function getInfo(data, callback){
 }
 */
 app.post('/submit-form-signup', (req, res) => {
+  let username = req.body.create_username;
+  username = username.toLowerCase();
   let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type) VALUES (
   \"${req.body.email}\",\"${req.body.first_name}\",\"${req.body.last_name}\",
-  \"${req.body.create_username.toLowerCase()}\",\"${req.body.create_password}\",\"Driver\")`;
+  \"${username}\",\"${req.body.create_password}\",\"Driver\")`;
 
   con.query(sql, function (err, result) {
    if (err){
