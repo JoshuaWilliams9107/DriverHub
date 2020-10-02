@@ -34,7 +34,6 @@ steps:
     runOptions: 'commands'
     commands: |
       sudo rsync -av /home/ubuntu/repoTemp/ /home/aj/project
-      cd /home/aj/project/documentRoot
       find /home/aj/project/documentRoot/* -exec sed  -i 's/http:\/\/127.0.0.1:3000/dynamic/g' {} \;
       sudo service project-server restart
     failOnStdErr: false
