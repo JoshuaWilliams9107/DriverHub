@@ -22,9 +22,9 @@ steps:
     sshEndpoint: 'EC2 Instance'
     sourceFolder: 'Node.JS SQL Login Prototype'
     contents: |
-      **\**
-      !server\node_modules\**
-      !.vscode\**
+      **/*
+      !server/node_modules/**
+      !.vscode/**
     targetFolder: '/home/ubuntu/repoTemp'
     cleanTargetFolder: true
     readyTimeout: '20000'
