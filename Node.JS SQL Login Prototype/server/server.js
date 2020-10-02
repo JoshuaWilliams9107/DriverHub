@@ -1,8 +1,9 @@
 let username;
 let password;
 var mysql = require('mysql');
-var http = require('http');
 var fs = require('fs');
+
+
 var con = mysql.createConnection({
   host: "database-2.crbonmxqlhis.us-east-1.rds.amazonaws.com",
   port: 3306,
@@ -25,6 +26,9 @@ app.use(session({resave: true, saveUninitialized:true, secret: "shhhhhhhhh"}));
 app.use(express.urlencoded({
   extended: true
 }))
+
+app.set('views', __dirname + "/../documentRoot");
+app.engine('html', require('ejs').renderFile);
 
 app.post('/submit-form', (req, res) => {
   if(!req.session.submitNumber){
@@ -99,22 +103,16 @@ app.post('/submit-form-signup', (req, res) => {
    });
 })
 
-fs.readFile('../documentRoot/index.html', function (err, html) {
-
-    if (err) throw err;    
-
-    http.createServer(function(request, response) {  
-        response.writeHeader(200, {"Content-Type": "text/html"});  
-        response.write(html);  
-        response.end();  
-    }).listen(port);
+app.get('/', function(req, res){
+    res.render('index.html');
 });
+
 
 //app.get('/', (req, res) => {
 //  res.send('Hello World!')
 //}
 
-//app.listen(port, () => {
-//  console.log(`Example app listening at http://localhost:${port}`)
-//})
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`)
+})
 
