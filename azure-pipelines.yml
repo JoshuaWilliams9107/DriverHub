@@ -24,6 +24,7 @@ steps:
     contents: |
       **\**
       !server\node_modules\**
+      !.vscode\**
     targetFolder: '/home/ubuntu/repoTemp'
     cleanTargetFolder: true
     readyTimeout: '20000'
