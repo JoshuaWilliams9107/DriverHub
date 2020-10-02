@@ -35,7 +35,6 @@ steps:
     inline: |
       sudo rm /home/aj/project/documentRoot/*
       sudo rsync -av /home/ubuntu/repoTemp/ /home/aj/project
-      find /home/aj/project/documentRoot/* -exec sed  -i 's/http:\/\/localhost:3000/dynamic/g' {} \;
       sudo service project-server restart
     failOnStdErr: false
     readyTimeout: '20000'
