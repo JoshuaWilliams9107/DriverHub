@@ -29,6 +29,7 @@ app.use(express.urlencoded({
 
 app.set('views', __dirname + "/../documentRoot");
 app.engine('html', require('ejs').renderFile);
+app.set('viewengine', "ejs");
 
 app.post('/submit-form', (req, res) => {
   if(!req.session.submitNumber){
@@ -56,7 +57,11 @@ app.post('/submit-form', (req, res) => {
     }
     res.end();
   }else{
-    res.send('I did not find that in the database also this worked!');
+    let login = encodeURIComponent("true");
+    res.redirect("/?failedLogin=" + login)
+    //res.render("index.ejs", {
+    //  test: 'Incorrect Password'
+    //});
   }
   });
   }else{
@@ -104,7 +109,9 @@ app.post('/submit-form-signup', (req, res) => {
 })
 
 app.get('/', function(req, res){
-    res.render('index.html');
+    res.render('index.ejs',{
+      test: req.query.failedLogin
+    });
 });
 
 

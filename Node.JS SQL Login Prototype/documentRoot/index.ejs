@@ -9,12 +9,20 @@
 		input{
 			font-size: 150%;
 		}
+		#error{
+			font-size: 150%;
+			color:red;
+		}
 	</style>
 </head>
 <body>
 	<center style="padding-top:200px;">
-                
-		<form method="POST" action="http://127.0.0.1:3000/submit-form">
+				<h1>Signin Page </h1>
+				
+				<% if (test === "true") 
+				{ %> <p id="error">Incorrect Username/Password</p>
+ 				<% } %>
+		<form method="POST" action="http://localhost:3000/submit-form">
 			<label for="username">Username:</label><br>
   			<input type="text" name="username" /><br>
   			<label for="password">Password:</label><br>
@@ -28,4 +36,5 @@
 	
 
 </body>
+
 </html>
