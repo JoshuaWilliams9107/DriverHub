@@ -44,15 +44,15 @@ app.post('/submit-form', (req, res) => {
   con.query(sql, function (err, result) {
    if (err) throw err;
    if(result.length != 0){
-    res.write('<h1>I did find that in the database<h1>');
+    //res.write('<h1>I did find that in the database<h1>');
     if(result[0].User_Type == "Driver"){
-        res.write('you are a driver');
+        res.render("driverpage.html")
     }
     else if(result[0].User_Type == "Admin"){
-	res.write('you are an admin');
+      res.render("adminpage.html")
     }
     else if(result[0].User_Type == "Sponsor"){
-	res.write('you are a driver');
+      res.render("sponsorpage.html")
     }
     res.end();
   }else{
