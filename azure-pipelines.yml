@@ -31,8 +31,8 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'EC2 Instance'
-    runOptions: 'commands'
-    commands: |
+    runOptions: 'inline'
+    inline: |
       sudo rsync -av /home/ubuntu/repoTemp/ /home/aj/project
       find /home/aj/project/documentRoot/* -exec sed  -i 's/http:\/\/127.0.0.1:3000/dynamic/g' {} \;
       sudo service project-server restart
