@@ -32,12 +32,15 @@
         
         <center style="padding-top:200px;">
                 <h1>Signup Page</h1>
+                <%if(userExists == "true") { %>
+                        <h2 style="color:red;">Username is taken</h2>
+                        <%}%>
                 <form method="POST" action="/submit-form-signup" id="signupForm">
                         <label for="firstname" id="firstname">First Name:</label><br>
                         <input type="text" name="first_name" /><br>
                         <label for="lastname" id="lastname">Last Name:</label><br>
                         <input type="text" name="last_name" /><br>
-                        <label for="text" id="username">New Username:</label><br>
+                        <label for="text" id="username" method="POST">New Username:</label><br>
                         <input type="text" name="create_username" /><br>
                         <label for="email" id="email">Email Address:</label><br>
                         <input type="text" name="email" /><br>
