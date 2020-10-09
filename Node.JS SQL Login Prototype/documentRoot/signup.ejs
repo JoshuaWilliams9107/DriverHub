@@ -3,9 +3,6 @@
 <head>
         <title>Prototype HTML Login</title>
         <style>
-                label{
-                        font-size: 150%;
-                }
                 input{
                         font-size: 150%;
                 }
@@ -13,37 +10,92 @@
                         color:red;
                 }
                 #myProgress {
+                        border:2px black;
                         margin: 0 auto;
                         width: 300px;
-                        background-color: grey;
+                        background-color: whitesmoke;
+                        border-style:inset;
                 }
 
                 #myBar {
-                        width: 1%;
+                        width: 0%;
                         height: 30px;
                         background-color: green;
+                }
+                /*new*/
+                input, input[placehorder] {
+			font-family: 'Arial';
+			text-align: center;
+			height:40px;
+			outline: none;
+			background-color: whitesmoke;
+			border: 0;
+		}
+		input:focus {
+			text-align: center;
+			height:40px;
+			border: 0;
+		}
+		body{
+			background-color: #2b2727;
+			font-family: 'Arial';
+		}
+		label{
+			font-size: 100%;
+		}
+		input{
+			font-size: 150%;
+		}
+		#signupPage{
+                        
+			background-color: white;
+			width: 350px;
+			padding-bottom: 25px;
+			padding-top: 12.5px;
+			box-shadow:10px 10px 30px black;  
+		}
+		#submitButton{
+			font-family: 'Arial';
+			background-color: #5eadb0;
+			border: 0;
+			color: white;
+			height:50px;
+			width:300px;
+			text-align: center;
+			font-weight: bold;
+			display: inline-block;
+			font-size:  28px;
+		}
+                #submitButton:disabled{
+                        background-color: #80a7a9;
+                }
+		#submit:hover {
+			background-color: #00b7bc;
+		}
+		#submit:focus {
+			border: 0;
+		}
+		a:visited{
+			color: #0000EE;
+		}
+                #captial{
+                        font-size:12px;
+                }
+                #numbers{
+                        font-size:12px;
+                }
+                #spchar{
+                        font-size:12px;
+                }
+                #errorLabel{
+                        font-size:12px;
                 }
         </style>
         <script>
                 let i = 0;
                 let passwordsMatch = true;
-                let formsFilled = false;
+                
                 let globalpasswordStrength = true;
-                function ifChanged(){
-                        if(document.getElementById("firstname").value.length > 0 &&
-                        document.getElementById("lastname").value.length > 0 &&
-                        document.getElementById("email").value.length > 0 &&
-                        document.getElementById("username").value.length > 0 &&
-                        document.getElementById("create_password").value.length > 0){
-                                formsFilled = true;
-                                if(passwordsMatch && globalpasswordStrength === true){
-                                        document.getElementById("submitButton").disabled = false; 
-                                }
-                        }else{
-                                document.getElementById("submitButton").disabled = true; 
-                                formsFilled = false;
-                        }
-                }
                 
                 function run() {
                         let p1 = document.getElementById("create_password").value;
@@ -51,7 +103,7 @@
                         if(p1 === p2){
                                 document.getElementById("errorLabel").innerHTML = "";
                                 passwordsMatch = true;
-                                if(passwordsMatch && globalpasswordStrength === true && formsFilled){
+                                if(passwordsMatch && globalpasswordStrength === true){
                                         document.getElementById("submitButton").disabled = false; 
                                 }
 
@@ -113,7 +165,7 @@
                                 globalpasswordStrength = false;
                         }else{
                                 globalpasswordStrength = true;
-                                if(passwordsMatch && formsFilled){
+                                if(passwordsMatch){
                                         document.getElementById("submitButton").disabled = false;
                                 }
                                 document.getElementById("myBar").style.backgroundColor = "green";
@@ -134,34 +186,38 @@
         </script>
 </head>
 <body>
-        
-        <center style="padding-top:200px;">
-                <h1>Signup Page</h1>
+        <center><h1 style="font-size:42px;padding-top:50px;color: white; text-shadow: 4px 4px black"">Driver Hub</h1></center>
+	
+	<center style="padding-top:25px;">
+                <div id="signupPage">
+                <h1>Create an account</h1>
+                <p style=>Already have an account? <a href = "/login"  id="forgot">Sign in</a></p>
                 <%if(userExists == "true") { %>
                         <h2 style="color:red;">Username is taken</h2>
                         <%}%>
                 <form method="POST" action="/submit-form-signup" id="signupForm">
-                        <label for="firstname" >First Name:</label><br>
-                        <input type="text" name="first_name" id="firstname" oninput="ifChanged()"/><br>
-                        <label for="lastname">Last Name:</label><br>
-                        <input type="text" name="last_name"  id="lastname" oninput="ifChanged()"/><br>
-                        <label for="text"  method="POST">New Username:</label><br>
-                        <input type="text" name="create_username" id="username" oninput="ifChanged()"/><br>
-                        <label for="email" >Email Address:</label><br>
-                        <input type="text" name="email" id = "email" oninput="ifChanged()"/><br>
-                        <label for="password">Create Password:</label><br>
-                        <input type="password" name="create_password" oninput="run(); passwordStrength(); ifChanged();" id="create_password"/><br>
+
+                        <input type="text" name="first_name" id="firstname" oninput="ifChanged()" placeholder = "first name" required/><br><br>
+                        <!--<label for="lastname">Last Name:</label><br>-->
+                        <input type="text" name="last_name"  id="lastname" oninput="ifChanged()" placeholder = "last name" required/><br><br>
+                        <!--<label for="text"  method="POST">New Username:</label><br>-->
+                        <input type="text" name="create_username" id="username" oninput="ifChanged()" placeholder = "username" required/><br><br>
+                        <!--<label for="email" >Email Address:</label><br>-->
+                        <input type="email" name="email" id = "email" oninput="ifChanged()" placeholder = "email address" pattern=".+@*.com" required/><br><br>
+                        <!--<label for="password">Create Password:</label><br>-->
+                        <input type="password" name="create_password" oninput="run(); passwordStrength(); ifChanged();" id="create_password" placeholder = "password" required/><br><br>
                         <label id="errorMsgs">Password Strength</label>
-                </center>
+
                         <div id="myProgress">
-                                <div id="myBar"></div>
+                                <div id="myBar" style="text-align: left;"></div>
                               </div>
-                 <center>
-                              <label for="password">Confirm Password:</label><br>
-                        <label for="errorLabel" id="errorLabel"></label><br>
-                        <input type="password" name="confirm_password" oninput="run()" id="confirm_password"/><br>
-                        <input type="submit" id="submitButton" disabled="true"/>
+
+                              <label for="password">Confirm Password:</label><br><br>
+                        <label for="errorLabel" id="errorLabel"></label><br><br>
+                        <input type="password" name="confirm_password" oninput="run()" id="confirm_password" placeholder = "confirm password"/><br><br>
+                        <button type="submit" id="submitButton" disabled="true">Sign up</button>
                 </form>
+                </div>
         </center>
 
 
