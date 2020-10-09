@@ -157,7 +157,18 @@ app.get('/sponsor', function(req, res){
     userID: req.session.userID
   });
 });
-
+app.get('',function(req,res){
+  if(req.session.userID){
+    res.redirect("/driver");
+  }else{
+    res.redirect("/login");
+  }
+})
+app.get('/logout', function(req, res){
+  req.session.username = null;
+  req.session.userID = null;
+  res.redirect("/login");
+});
 
 //test
 //app.get('/', (req, res) => {
