@@ -157,7 +157,7 @@ app.get('/sponsor', function(req, res){
     userID: req.session.userID
   });
 });
-app.get('',function(req,res){
+app.get('/',function(req,res){
   if(req.session.userID){
     res.redirect("/driver");
   }else{
