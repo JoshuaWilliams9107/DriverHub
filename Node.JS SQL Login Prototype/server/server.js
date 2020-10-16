@@ -47,7 +47,9 @@ app.post('/submit-form', async(req, res) => {
   console.log(req.session.submitNumber);
   if(req.session.submitNumber < 5){
     let username = req.body.username;
-    let password = req.body.password;
+    let crypto = require('crypto');
+    let password = crypto.createHash('md5').update(req.body.password).digest('hex');
+    //let password = req.body.password;
     let userType = await getUserType(username,password);
     if(userType === false){
       let login = encodeURIComponent("true");
@@ -102,11 +104,23 @@ function getUnique(username){
   });
   });
 }
+function getDrivers(){
+  let sql3 = `select * from User where User_Type = "Driver"`;
+  return new Promise((resolve,reject) => {con.query(sql3,(err, result) => {
+    if (err){
+     throw err;
+     }
+    return err ? reject(err) : resolve(result);
+   });
+   });
+}
 app.post('/submit-form-signup', async(req, res) => {
   try {  
     let username = req.body.create_username;
     username = username.toLowerCase();
     let numberOfExistingUsers = await getUnique(username);
+    let crypto = require('crypto');
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
     console.log(numberOfExistingUsers);
     if(numberOfExistingUsers > 0){
       let login = encodeURIComponent("true");
@@ -115,7 +129,7 @@ app.post('/submit-form-signup', async(req, res) => {
     }
     let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type) VALUES (
     \"${req.body.email}\",\"${req.body.first_name}\",\"${req.body.last_name}\",
-    \"${username}\",\"${req.body.create_password}\",\"Driver\")`;
+    \"${username}\",\"${password}\",\"Driver\")`;
 
     con.query(sql, function (err, result) {
     if (err){
@@ -129,21 +143,42 @@ app.post('/submit-form-signup', async(req, res) => {
   }
 })
 
+function add() {
+  var element = document.createElement("input");
+  element.setAttribute("name", "whatever");
+  var elementAbove = document.getElementById("elementAbove");
+  elementAbove.appendChild(element);
+}
+
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
     });
 });
 app.get('/signup', function(req, res){
+  let crypto = require('crypto');
+  // let test = "abc123";
+  // let password = crypto.createHash('md5').update(test).digest('hex');
+  // console.log(password);
   res.render('signup.ejs',{
     userExists: req.query.userExists
   });
 });
 app.get('/admin', function(req, res){
+  //let test = "jeff";
+  // getDrivers().then((value) => {
+  //   res.render('adminpage.ejs',{
+  //     username: req.session.username,
+  //     userID: req.session.userID,
+  //     drivers: value
+  //   });
+  // });
+  //let driversobject=getDrivers();
   res.render('adminpage.ejs',{
-    username: req.session.username,
-    userID: req.session.userID
-  });
+      username: req.session.username,
+      userID: req.session.userID,
+      //drivers: driversobject
+      });
 });
 app.get('/driver', function(req, res){
   res.render('driverpage.ejs',{
@@ -169,6 +204,25 @@ app.get('/logout', function(req, res){
   req.session.userID = null;
   res.redirect("/login");
 });
+app.post('/getDrivers', function(req, res){
+  console.log("it worked");
+  let sql = `SELECT * FROM User WHERE User_Type = "Driver"`;
+  con.query(sql, function (err, result) {
+    if (err){
+      throw err;
+    }else{
+      if(result.length > 0){
+        console.log("there are drivers")
+        console.log(result.length)
+      }
+      else{
+        console.log("no drivers here")
+      }
+    }
+    });
+  res.redirect("/admin");
+});
+
 
 //test
 //app.get('/', (req, res) => {

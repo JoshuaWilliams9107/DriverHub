@@ -81,8 +81,23 @@
         </center>
         <center><h1>[Insert Catalog API Here]</h1></center>
         <center>
-        <p>You are an admin.</p>
 
+            <form method="POST" action="/getDrivers">
+                  <button id="submit">Add points to driver</button>
+            </form>
+            <select id="select">
+                <option value="default">default</option>
+            </select>
+
+            <!-- <select name="drivers" id = "drivertable">
+                <%drivers
+                for(int i = 0; i < drivers.length; i++){
+                    %><option value = <%="\"" + drivers[i].Username% + " \""%> ><%drivers[i].Username%></option>
+                <%}
+                %>
+                
+            </select> -->
+            <p>You are an admin.</p>
             <p>Your username is <%=username%></p>
             <p>Your userID is <%=userID%></p>
         </center>
