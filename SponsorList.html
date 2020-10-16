@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Invoices</title>
+<title>SponsorList</title>
 	<style>
 		body{
 			margin-left: 10%;
@@ -32,24 +32,24 @@
 			text-decoration: none;
 			font-size: 150%;
 		}
-		#invoices{
+		#sponsors{
 			border-collapse: collapse;
 			width: 100%;
 			text-align: center;
 		}
-		#invoices td, #invoices th{
+		#sponsors td, #sponsors th{
 			border: 1px solid #ddd;
 			padding: 8px;
 		}
 		
-		#invoices tr:nth-child(even){background-color: #f2f2f2;}
+		#sponsors tr:nth-child(even){background-color: #f2f2f2;}
 		
-		#invoices th{
+		#sponsors th{
 			padding-top: 12px;
 			padding-bottom: 12px;
 			background-color: aqua;
 		}
-		#invoices a{
+		#sponsors a{
 			font-size: 100%;
 			text-decoration: underline;
 		}
@@ -65,37 +65,47 @@
   		<li><a href="#home">Home</a></li>
   		<li><a href="#SponsorProfile.html">Profile</a></li>
   		<li><a href="#Catalog.html">Catalog</a></li>
-  		<li><a href="#DriverList.html">Drivers</a></li>
+  		<li><a href="#Points.html">Points</a></li>
 		<li><a href="logout">Log Out</a></li>
-		<li>Sponsor View</li>
 	</ul>
 	
 	<br>
 	
-	<table id="invoices">
+	<table id="sponsors">
 		<tr>
-			<th>ID Number</th>
-			<th>Month</th>
-			<th>Price</th>
-			<th>Pay</th>
+			<th>Sponsor</th>
+			<th>Points</th>
+			<th>Rate</th>
+			<th>Date Added</th>
+			<th>Drop</th>
 		</tr>
 		<tr>
-			<td><a href="invoice">12345</a></td>
-			<td>October 2020</td>
-			<td>$873.19</td>
-			<td><a href="pay">Pay</a></td>
+			<td>Al-Jamil, Tahani</td>
+			<td>400</td>
+			<td>1pt = $3.00</td>
+			<td>09/02/2019</td>
+			<td><a href="Drop.html">Drop</a></td>
 		</tr>
 		<tr>
-			<td><a href="invoice">45678</a></td>
-			<td>September 2020</td>
-			<td>$412.13</td>
-			<td><a href="pay">Pay</a></td>
+			<td>Anagonye, Chidi</td>
+			<td>565</td>
+			<td>1pt = $1.00</td>
+			<td>11/04/2019</td>
+			<td><a href="Drop.html">Drop</a></td>
 		</tr>
 		<tr>
-			<td><a href="invoice">80123</a></td>
-			<td>August 2020</td>
-			<td>$212.98</td>
-			<td><a href="pay">Pay</a></td>
+			<td>Mendoza, Jason</td>
+			<td>6</td>
+			<td>1pt = $0.05</td>
+			<td>12/22/2019</td>
+			<td><a href="Drop.html">Drop</a></td>
+		</tr>
+		<tr>
+			<td>Shellstrop, Eleanor</td>
+			<td>4200</td>
+			<td>1pt = $2.50</td>
+			<td>02/06/2020</td>
+			<td><a href="Drop.html">Drop</a></td>
 		</tr>
 	</table>
 </body>

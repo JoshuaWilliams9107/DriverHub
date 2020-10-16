@@ -33,15 +33,22 @@
 			text-decoration: none;
 			font-size: 150%;
 		}
-		points{
+		#points{
+			border-collapse: collapse;
+			width: 100%;
 			text-align: center;
-			font-size: 300%;
-			padding-top: 200px;
-			text-decoration: underline;
-			align-content: center;
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
+		}
+		#points td, #points th{
+			border: 1px solid #ddd;
+			padding: 8px;
+		}
+		
+		#points tr:nth-child(even){background-color: #f2f2f2;}
+		
+		#points th{
+			padding-top: 12px;
+			padding-bottom: 12px;
+			background-color: aqua;
 		}
 	</style>
 </head>
@@ -54,12 +61,32 @@
   		<li><a href="#home">Home</a></li>
   		<li><a href="Profile.html">Profile</a></li>
   		<li><a href="#catalog">Catalog</a></li>
-  		<li><a href="Points.html">Points: 45</a></li>
+  		<li><a href="Points.html">Points</a></li>
 		<li><a href="logout">Log Out</a></li>
 	</ul>
-	<points>
-		Current Points: 45
-	</points>
+	<br><br>
+	<table id="points">
+		<tr>
+			<th>Sponsor</th>
+			<th>Points</th>
+			<th>Rate</th>
+		</tr>
+		<tr>
+			<td>Fred Flintstone</td>
+			<td>645</td>
+			<td>1pt = $1.00</td>
+		</tr>
+		<tr>
+			<td>George Jetson</td>
+			<td>812</td>
+			<td>1pt = $0.10</td>
+		</tr>
+		<tr>
+			<td>Yogi Bear</td>
+			<td>36</td>
+			<td>1pt = $1.50</td>
+		</tr>
+	</table>
 	
 </body>
 </html>
