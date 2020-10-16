@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Drop</title>
+<title>CancelConfirm</title>
 	<style>
-	body{
+		body{
 			margin-left: 10%;
 			margin-right: 10%;
 			font-family: "Gill Sans", Gill, sans-serif;
@@ -32,36 +32,16 @@
 			text-decoration: none;
 			font-size: 150%;
 		}
-		text{
+		confirm{
 			font-size: 150%;
-			padding: 20%;
-		}
-		textarea {
-  			width: 100%;
-  			height: 150px;
-  			padding: 12px 20px;
-  			box-sizing: border-box;
-  			border: 2px solid #ccc;
-  			border-radius: 4px;
-  			background-color: #f8f8f8;
-  			font-size: 16px;
-  			resize: none;
-		}
-		button{
 			text-align: center;
-			padding: 50%;
-			vertical-align: middle;
-			text-decoration: none;
-			padding: 16px 32px;
-			display: flex;
-			justify-content: center;
-			font-size: 150%;
-			border: none;
-			background-color: aquamarine;
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
-			
+		}
+		a2{
+  			background-color: aquamarine;
+  			padding: 14px 25px;
+  			text-align: center;
+  			text-decoration: none;
+  			display: inline-block;
 		}
 	</style>
 </head>
@@ -77,10 +57,20 @@
   		<li><a href="Points.html">Points</a></li>
 		<li><a href="logout">Log Out</a></li>
 	</ul>
-	<text><br>Sorry to see you go! Please tell us why you want to drop your sponsor below.</text>
-	<form>
-  		<textarea>Some text...</textarea>
-	</form>
-	<button type="button" value="Submit">Submit</button>
+	<ul>
+		<li><a href="Catalog.html">Shop</a></li>
+		<li><a href="PurchaseHistory.html">Purchase History</a></li>
+	</ul>
+	
+	<br>
+	
+	<confirm>Are you sure you want to cancel your purchase of Super Mushroom?</confirm>
+	
+	<br>
+	<br>
+	
+	<a2 href="PurchaseHistory.html">Yes</a2>
+	<a2 href="PurchaseHistory.html">No</a2>
+	
 </body>
 </html>
