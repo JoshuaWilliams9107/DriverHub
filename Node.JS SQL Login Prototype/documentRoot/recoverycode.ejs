@@ -60,28 +60,35 @@
 			color: #0000EE;
 		}
 	</style>
+	<script>
+		function init() {
+			var url = window.location.href;
+			 if (url.split("?")[1] === "code=false") 
+			{ 
+				let error = document.createElement("p");
+				error.id = "error";
+				error.innerHTML = "Recovery Code is not valid"; 
+				document.getElementById("info").appendChild(error);
+			}
+		}
+	</script>
 </head>
-<body>
+<body onload="init()">
 	<center><h1 style="font-size:42px;padding-top:125px;color: white; text-shadow: 4px 4px black"">Driver Hub</h1></center>
 	
 	<center style="padding-top:25px;">
 		
 		<div id = "loginPage">
-				<h1 style="font-weight: bold;">Welcome!</h1>
-				<p style=>Please login or <a href = "/signup"  id="forgot">Create an account</a></p>
-				
-				<% if (test === "true") 
-				{ %> <p id="error">Incorrect Username/Password</p>
- 				<% } %>
-		<form method="POST" action="/submit-form">
+				<h1 style="font-weight: bold;">Reset Password</h1>
+
+		<form method="POST" action="/submit-form-recover-code">
 			<!--<label for="username" >Username:</label><br>-->
-  			<input type="text" name="username" placeholder="username" /><br><br>
-  			<!--<label for="password">Password:</label><br>-->
-			<input type="password" name="password" placeholder="password" /><br><br>
-  			<button id="submit">Sign in</button>
+			<p id = "info">Enter recovery code.</p>
+			
+  			<input type="text" name="code" placeholder="recovery code" /><br><br>
+  			<button id="submit">Submit</button>
 		</form>
 		<br>
-		<a href = "/forgotpassword"  id="forgot">Forgot Password</a><br><br>
 		
 	</div>
 	
