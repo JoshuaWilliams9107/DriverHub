@@ -22,6 +22,18 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json());
 const port = 3000
 var session = require("express-session");
+var nodemailer = require('nodemailer');
+let crypto = require('crypto');
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'driverhubautomated@gmail.com',
+    pass: '0qtRH4h2D9bA'
+  }
+});
+
+//email:driverhubautomated@gmail.com
+//password:0qtRH4h2D9bA
 app.use(session({
   resave: true,
   rolling: true,
@@ -47,7 +59,7 @@ app.post('/submit-form', async(req, res) => {
   console.log(req.session.submitNumber);
   if(req.session.submitNumber < 5){
     let username = req.body.username;
-    let password = req.body.password;
+    let password = crypto.createHash('md5').update(req.body.password).digest('hex');;
     let userType = await getUserType(username,password);
     if(userType === false){
       let login = encodeURIComponent("true");
@@ -102,10 +114,79 @@ function getUnique(username){
   });
   });
 }
+function getUniqueEmail(email){
+  let sql2 = `SELECT * FROM User where Email= "${email}"`;
+  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
+   let isUnique = false;
+   if (err){
+    throw err;
+    }else{
+        if(result.length > 0){
+          isUnique = false;
+        }else{
+          isUnique = true;
+        }
+    }
+    return err ? reject(err) : resolve(result.length);
+  });
+  });
+}
+function insertCode(email,code){
+  let sql2 = `UPDATE User SET Password_Reset="${code}" where email="${email}"`;
+  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
+   let isUnique = false;
+   if (err){
+    throw err;
+    }else{
+        if(result.length > 0){
+          isUnique = false;
+        }else{
+          isUnique = true;
+        }
+    }
+    return err ? reject(err) : resolve(result.length);
+  });
+  });
+}
+function updateNewPassword(password,req){
+  let sql2 = `UPDATE User SET Password="${password}" where idUser="${req.session.userID}"`;
+  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
+   let isUnique = false;
+   if (err){
+    throw err;
+    }else{
+        if(result.length > 0){
+          isUnique = false;
+        }else{
+          isUnique = true;
+        }
+    }
+    return err ? reject(err) : resolve(result.length);
+  });
+  });
+}
+function checkRecovery(code){
+  let sql2 = `SELECT * FROM User where Password_Reset= ${code}`;
+  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
+   let isUnique = false;
+   if (err){
+    throw err;
+    }else{
+        if(result.length > 0){
+          isUnique = false;
+        }else{
+          isUnique = true;
+        }
+    }
+    return err ? reject(err) : resolve(result);
+  });
+  });
+}
 app.post('/submit-form-signup', async(req, res) => {
   try {  
     let username = req.body.create_username;
     username = username.toLowerCase();
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
     let numberOfExistingUsers = await getUnique(username);
     console.log(numberOfExistingUsers);
     if(numberOfExistingUsers > 0){
@@ -113,9 +194,9 @@ app.post('/submit-form-signup', async(req, res) => {
       res.redirect("/signup?userExists=" + login)
       return;
     }
-    let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type) VALUES (
+    let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type,Birth_Date) VALUES (
     \"${req.body.email}\",\"${req.body.first_name}\",\"${req.body.last_name}\",
-    \"${username}\",\"${req.body.create_password}\",\"Driver\")`;
+    \"${username}\",\"${password}\",\"${req.body.accountType.charAt(0).toUpperCase() + req.body.accountType.slice(1)}\",\"${req.body.birthday}\")`;
 
     con.query(sql, function (err, result) {
     if (err){
@@ -128,11 +209,76 @@ app.post('/submit-form-signup', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/submit-form-reset-password', async(req, res) => {
+  try {  
+    let emailExists = await getUniqueEmail(req.body.email);
+    if(emailExists == 0){
+      let login = encodeURIComponent("true");
+      res.redirect("/forgotpassword?userExists=" + login)
+      return;
+    }
+    let randomCode = Math.round(Math.random() * (99999 - 10000) + 10000);
+    insertCode(req.body.email,randomCode);
+    var mailOptions = {
+      from: 'driverhubautomated@gmail.com',
+      to: req.body.email,
+      subject: 'Forgot DriverHub Password',
+      text: `Recovery Code: ${randomCode}`
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+    res.redirect("/recoverycode");
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/submit-form-recover-code', async(req, res) => {
+  try {  
+    let recover = await checkRecovery(req.body.code);
+    console.log(recover[0].Username);
+    if(recover.length == 0){
+      res.redirect("/recoverycode?code=false");
+    }
+    req.session.username = recover[0].Username;
+    req.session.userID = recover[0].idUser;
+    res.redirect("/resetpassword");
+    //req.session.username = 
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/submit-form-new-password', async(req, res) => {
+  try {  
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
+    let newPassword = await updateNewPassword(password,req);
+    req.session.username = undefined;
+    req.session.userID = undefined;
+    res.redirect("/login");
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
     });
+});
+app.get('/forgotpassword', function(req, res){
+  res.render('forgotpassword.ejs');
+});
+app.get('/recoverycode', function(req, res){
+  res.render('recoverycode.ejs');
+});
+app.get('/resetpassword', function(req, res){
+  res.render('resetpassword.ejs');
 });
 app.get('/signup', function(req, res){
   res.render('signup.ejs',{
