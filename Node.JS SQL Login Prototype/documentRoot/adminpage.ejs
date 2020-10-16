@@ -76,15 +76,21 @@
             </div>
             
           </div>
-          
           <br><br>
         </center>
         <center><h1>[Insert Catalog API Here]</h1></center>
         <center>
-        <p>You are an admin.</p>
+        <p>You are an Admin.</p>
 
             <p>Your username is <%=username%></p>
             <p>Your userID is <%=userID%></p>
+            <select name="drivers" id = "drivertable">
+                <%
+                for(let i = 0; i < drivers.length; i++){
+                    %><option value = "<%=drivers[i].Username%>"> <%=drivers[i].Username%></option>
+                <%}%>
+
+            </select>
         </center>
     </body>
 </html>

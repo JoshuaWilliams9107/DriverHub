@@ -114,6 +114,16 @@ function getUnique(username){
   });
   });
 }
+function getDrivers(){
+  let sql3 = `select * from User where User_Type = "Driver"`;
+  return new Promise((resolve,reject) => {con.query(sql3,(err, result) => {
+    if (err){
+     throw err;
+     }
+    return err ? reject(err) : resolve(result);
+   });
+   });
+  }
 function getUniqueEmail(email){
   let sql2 = `SELECT * FROM User where Email= "${email}"`;
   return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
@@ -286,10 +296,18 @@ app.get('/signup', function(req, res){
   });
 });
 app.get('/admin', function(req, res){
-  res.render('adminpage.ejs',{
-    username: req.session.username,
-    userID: req.session.userID
+  getDrivers().then((value) => {
+    res.render('adminpage.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      drivers: value
+    });
   });
+  //let driversobject=getDrivers();
+  //res.render('adminpage.ejs',{
+  //  username: req.session.username,
+  //  userID: req.session.userID
+  //});
 });
 app.get('/driver', function(req, res){
   res.render('driverpage.ejs',{
