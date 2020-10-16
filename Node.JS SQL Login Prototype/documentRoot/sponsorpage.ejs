@@ -1,14 +1,87 @@
 <!DOCTYPE html>
 <html>
-<body>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial;
+            }
+           #topnav {
+                
+                overflow: hidden;
+                background-color: #333;
+            }
 
-<h1>Sponsor Page</h1>
+            #topnav a {
+                color: #f2f2f2;
+                text-align: center;
+                padding: 21px 16px;
+                text-decoration: none;
+                font-size: 17px;
 
-<p>You are a sponsor</p>
+            }
 
-<p>Your username is <%=username%></p>
-<p>Your userID is <%=userID%></p>
+            #topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
 
-</body>
+            #topnav a.active {
+                background-color:#5eadff;
+                color:black;
+                font-weight:bold;
+                
+            }
+            .floatright{
+                float:right;
+            }
+            .floatleft{
+                float:left;
+            }
+            #search{
+                font-family: 'Arial';
+                background-color: #5eadb0; /* Green */
+                border: 0;
+                color: white;
+                height:37px;
+                width:72px;
+                text-align: left;
+                font-weight: bold;
+                display: inline;
+                padding: 7px;
+                font-size: 17px;
+                vertical-align: middle;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="topnav">
+            <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
+            
+            <a href="#home" class="active" style="float:left;">Home</a>
+            <p style="float:right;" style="padding-right: 100px;"></p>
+            <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
+                <form style="display: inline;overflow:hidden;">
+                    <input type="text"placeholder="search" style="width:500px;display: inline;padding: 7px;font-size: 17px;vertical-align: middle;"/>
+                    <button id="search">Search</button>
+                    
+                </form>
+            </div>
+            <div style="padding-right:100px">
+                <a href="/logout" style="float:right;">Logout</a>
+                <a href="#about" style="float:right;">Cart</a>
+                <a href="#contact" style="float:right;">My Sponsor</a>
+                <a href="#news" style="float:right;">My Profile (<%=username%>)</a>
+                
+            </div>
+            <p>You are an admin.</p>
+
+            <p>Your username is <%=username%></p>
+            <p>Your userID is <%=userID%></p>
+          </div>
+          <br><br>
+        </center>
+        <center><h1>[Insert Catalog API Here]</h1></center>
+    </body>
 </html>
 
