@@ -31,6 +31,15 @@ var transporter = nodemailer.createTransport({
     pass: '***REMOVED***'
   }
 });
+let EBay = require('ebay-node-api');
+
+let ebay = new EBay({
+  clientID: '***REMOVED***',
+  headers:{ // optional
+    'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' // For Great Britain https://www.ebay.co.uk
+  }
+});
+
 
 //email:***REMOVED***
 //password:***REMOVED***
@@ -310,10 +319,40 @@ app.get('/admin', function(req, res){
   //});
 });
 app.get('/driver', function(req, res){
-  res.render('driverpage.ejs',{
-    username: req.session.username,
-    userID: req.session.userID
-  });
+  let pageOffset = '0'
+  if(req.query.pageNumber){
+    pageOffset = req.query.pageNumber;
+  }
+  let searchKeyword = "car";
+  if(req.query.search){
+    searchKeyword = req.query.search;
+  }
+
+      ebay.findItemsByKeywords({
+          keywords: searchKeyword,
+          entriesPerPage: 10,
+          pageNumber: parseInt(pageOffset)+1,
+          itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
+      }).then((data) => {
+        console.log(data);
+        res.render("driverpage.ejs",{
+          username: req.session.username,
+          userID: req.session.userID,
+        ebayObj: data});
+          // Data is in format of JSON
+          // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+
+});
+});
+app.get('/product', function(req, res){
+  let productID = req.query.id;
+      ebay.getSingleItem(productID).then((data) => {
+        console.log(data);
+        res.render("productpage.ejs",{
+          username: req.session.username,
+          userID: req.session.userID,
+          ebayObj: data});
+      })
 });
 app.get('/sponsor', function(req, res){
   res.render('sponsorpage.ejs',{
