@@ -5,6 +5,8 @@
             body {
                 margin: 0;
                 font-family: Arial;
+                font-size: 17px;
+                background-color: whitesmoke;
             }
            #topnav {
                 
@@ -53,6 +55,27 @@
                 vertical-align: middle;
             }
         </style>
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            let pageNumber = params.get('pageNumber');
+            let search = params.get('search');
+            if(!pageNumber){
+                pageNumber = 0;
+            }
+            function NextPage() {
+                pageNumber++;
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+            };
+            function PreviousPage() {
+                if(pageNumber > 0){
+                    pageNumber--;
+                }
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber+ "&search=" + search;
+            };
+            function Search() {
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + 0 + "&" + "search=" + document.getElementById("searchText").value;
+            };
+        </script>
     </head>
     <body>
         <div id="topnav">
@@ -61,11 +84,7 @@
             <a href="#home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
-                <form style="display: inline;overflow:hidden;">
-                    <input type="text"placeholder="search" style="width:500px;display: inline;padding: 7px;font-size: 17px;vertical-align: middle;"/>
-                    <button id="search">Search</button>
-                    
-                </form>
+                
             </div>
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
@@ -78,14 +97,66 @@
           </div>
           <br><br>
         </center>
-        <center><h1>[Insert Catalog API Here]</h1></center>
-        <center>
-        <p>You are a driver.</p>
 
-            <p>Your username is <%=username%></p>
-            <p>Your userID is <%=userID%></p>
+            
             
         </center>
+        <div style="margin-right:30%;margin-left:30%;padding-bottom:30px;">
+            <center>
+
+            <input type="text" placeholder="search" style="display: inline;width:80%;padding: 7px;font-size: 17px;vertical-align: middle;" name="searchText" id="searchText"/>
+            <button style="display: inline;" id="search" Onclick="Search()">Search</button>
+
+    </center>
+    </div>
+        <div style ="background-color: white;margin-left:10%;margin-right:10%;">
+        <%
+        if(ebayObj){%>
+        <%for(let i = 0; i < ebayObj[0].searchResult[0].item.length; i++){
+            if(ebayObj[0].searchResult[0].item[i].galleryURL){%>
+                <%if(i == ebayObj[0].searchResult[0].item.length - 1){%>
+                <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                    <%}else{%>
+                        <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                        <%}%>
+                <span style="width:200px;height:200px;">
+                <img style="display: inline-block;width:inherit;vertical-align:middle;border-style: solid;border-width:1px;border-top-width:0px;border-bottom-width:0px;border-left:2px;border-color:#eaeaea;" src = "<%=ebayObj[0].searchResult[0].item[i].galleryURL[0]%>">
+                </span>
+                <div style="display: inline-block;">
+                    <a href = "/product?id=<%=ebayObj[0].searchResult[0].item[i].itemId[0]%>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
+                    <%if(ebayObj[0].searchResult[0].item[i].condition){%>
+                    <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
+                    <%}%>
+                    <%if(ebayObj[0].searchResult[0].item[i].subtitle){%>
+                    <p><%=ebayObj[0].searchResult[0].item[i].subtitle[0]%></p>
+                    <%}%>
+                    <p style="font-weight: bolder; font-size:22px;">$<%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%></p>
+                </div>
+                </div>
+         <%}else{%>
+            <%if(i == ebayObj[0].searchResult[0].item.length - 1){%>
+                <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                    <%}else{%>
+                        <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                        <%}%>
+                    <span style="width:200px;height:200px;">
+                        <img style="width:inherit;vertical-align:middle;border-style: solid;border-width:1px;border-top-width:0px;border-bottom-width:0px;border-left:2px;border-color:#eaeaea;" src = "https://secureir.ebaystatic.com/pictures/aw/pics/stockimage1.jpg">
+                        <div style="display: inline-block;">
+                            <a href = "/product?id=<%=  %>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
+                            <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
+                            <p style="font-weight: bolder; font-size:22px;">$<%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%></p>
+                        </div>
+                </div>
+         <%}}}else{%>
+            <center>
+            <p style="padding-top: 50px;padding-bottom: 50px;">no search results were found</p>
+            </center>
+            <%}%>
+        </div>
+        <div style="padding-bottom:100px;padding-top: 20px;">
+            <button style="float:right;margin-right:10%;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();" >&#8250;</button>
+            <button style="float:left;margin-left:10%;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button>
+        </div>
     </body>
 </html>
 
