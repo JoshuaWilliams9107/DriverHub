@@ -69,7 +69,7 @@ app.post('/submit-form', async(req, res) => {
   if(req.session.submitNumber < 5){
     let username = req.body.username;
     let password = crypto.createHash('md5').update(req.body.password).digest('hex');;
-    let userType = await getUserType(username,password);
+    let userType = await sqlStatement(`SELECT * FROM User WHERE Username= "${username}" AND Password= "${password}"`);
     if(userType === false){
       let login = encodeURIComponent("true");
       req.session.submitNumber +=1;
@@ -93,122 +93,22 @@ app.post('/submit-form', async(req, res) => {
   //  console.log(password);
   //}
 })
-function getUserType(username,password){
-  let sql = `SELECT * FROM User WHERE Username= "${username}" AND Password= "${password}"`;
-  return new Promise((resolve,reject) => {con.query(sql,(err, result) => {
-    if (err){
-      throw err;
-    }if(result.length != 0){
-     return err ? reject(err) : resolve(result);
-   }else{
-    return err ? reject(err) : resolve(false);
-   }
-  });
-  });
-}
-function getUnique(username){
-  let sql2 = `SELECT * FROM User where Username= "${username}"`;
-  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
-   let isUnique = false;
-   if (err){
-    throw err;
-    }else{
-        if(result.length > 0){
-          isUnique = false;
-        }else{
-          isUnique = true;
-        }
-    }
-    return err ? reject(err) : resolve(result.length);
-  });
-  });
-}
-function getDrivers(){
-  let sql3 = `select * from User where User_Type = "Driver"`;
-  return new Promise((resolve,reject) => {con.query(sql3,(err, result) => {
+function sqlStatement(sqlCommand){
+  return new Promise((resolve,reject) => {con.query(sqlCommand,(err, result) => {
     if (err){
      throw err;
      }
     return err ? reject(err) : resolve(result);
    });
    });
-  }
-function getUniqueEmail(email){
-  let sql2 = `SELECT * FROM User where Email= "${email}"`;
-  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
-   let isUnique = false;
-   if (err){
-    throw err;
-    }else{
-        if(result.length > 0){
-          isUnique = false;
-        }else{
-          isUnique = true;
-        }
-    }
-    return err ? reject(err) : resolve(result.length);
-  });
-  });
-}
-function insertCode(email,code){
-  let sql2 = `UPDATE User SET Password_Reset="${code}" where email="${email}"`;
-  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
-   let isUnique = false;
-   if (err){
-    throw err;
-    }else{
-        if(result.length > 0){
-          isUnique = false;
-        }else{
-          isUnique = true;
-        }
-    }
-    return err ? reject(err) : resolve(result.length);
-  });
-  });
-}
-function updateNewPassword(password,req){
-  let sql2 = `UPDATE User SET Password="${password}" where idUser="${req.session.userID}"`;
-  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
-   let isUnique = false;
-   if (err){
-    throw err;
-    }else{
-        if(result.length > 0){
-          isUnique = false;
-        }else{
-          isUnique = true;
-        }
-    }
-    return err ? reject(err) : resolve(result.length);
-  });
-  });
-}
-function checkRecovery(code){
-  let sql2 = `SELECT * FROM User where Password_Reset= ${code}`;
-  return new Promise((resolve,reject) => {con.query(sql2,(err, result) => {
-   let isUnique = false;
-   if (err){
-    throw err;
-    }else{
-        if(result.length > 0){
-          isUnique = false;
-        }else{
-          isUnique = true;
-        }
-    }
-    return err ? reject(err) : resolve(result);
-  });
-  });
 }
 app.post('/submit-form-signup', async(req, res) => {
   try {  
     let username = req.body.create_username;
     username = username.toLowerCase();
     let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
-    let numberOfExistingUsers = await getUnique(username);
-    console.log(numberOfExistingUsers);
-    if(numberOfExistingUsers > 0){
+    let numberOfExistingUsers = await sqlStatement(`SELECT * FROM User where Username= "${username}"`);
+    if(numberOfExistingUsers.length > 0){
       let login = encodeURIComponent("true");
       res.redirect("/signup?userExists=" + login)
       return;
@@ -251,14 +151,14 @@ app.post('/submit-form-addpoints', async(req, res) => {
 
 app.post('/submit-form-reset-password', async(req, res) => {
   try {  
-    let emailExists = await getUniqueEmail(req.body.email);
-    if(emailExists == 0){
+    let emailObj = await sqlStatement(`SELECT * FROM User where Email= "${req.body.email}"`);
+    if(emailObj.length == 0){
       let login = encodeURIComponent("true");
       res.redirect("/forgotpassword?userExists=" + login)
       return;
     }
     let randomCode = Math.round(Math.random() * (99999 - 10000) + 10000);
-    insertCode(req.body.email,randomCode);
+    sqlStatement(`UPDATE User SET Password_Reset="${randomCode}" where email="${req.body.email}"`);
     var mailOptions = {
       from: 'driverhubautomated@gmail.com',
       to: req.body.email,
@@ -280,7 +180,7 @@ app.post('/submit-form-reset-password', async(req, res) => {
 })
 app.post('/submit-form-recover-code', async(req, res) => {
   try {  
-    let recover = await checkRecovery(req.body.code);
+    let recover = await sqlStatement(`SELECT * FROM User where Password_Reset= ${req.body.code}`);
     console.log(recover[0].Username);
     if(recover.length == 0){
       res.redirect("/recoverycode?code=false");
@@ -296,7 +196,7 @@ app.post('/submit-form-recover-code', async(req, res) => {
 app.post('/submit-form-new-password', async(req, res) => {
   try {  
     let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
-    let newPassword = await updateNewPassword(password,req);
+    let newPassword = await sqlStatement(`UPDATE User SET Password="${password}" where idUser="${req.session.userID}"`);
     req.session.username = undefined;
     req.session.userID = undefined;
     res.redirect("/login");
@@ -326,7 +226,7 @@ app.get('/signup', function(req, res){
   });
 });
 app.get('/admin', function(req, res){
-  getDrivers().then((value) => {
+  sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
     res.render('adminpage.ejs',{
       username: req.session.username,
       userID: req.session.userID,
