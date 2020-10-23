@@ -228,6 +228,27 @@ app.post('/submit-form-signup', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+
+app.post('/submit-form-addpoints', async(req, res) => {
+  try {  
+    let userID = req.body.driverID;
+    console.log(userID);
+    let points = req.body.pointsToAdd;
+    console.log(points);
+    let sql = `UPDATE User SET Point_Balance = Point_Balance + ${points} WHERE idUser = ${userID}`
+
+    con.query(sql, function (err, result) {
+    if (err){
+      throw err;
+    }else{
+      res.redirect("http://localhost:3000/admin?fname=")
+    }
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
 app.post('/submit-form-reset-password', async(req, res) => {
   try {  
     let emailExists = await getUniqueEmail(req.body.email);
@@ -355,9 +376,12 @@ app.get('/product', function(req, res){
       })
 });
 app.get('/sponsor', function(req, res){
-  res.render('sponsorpage.ejs',{
-    username: req.session.username,
-    userID: req.session.userID
+  getDrivers().then((value) => {
+    res.render('sponsorpage.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      drivers: value
+    });
   });
 });
 app.get('/',function(req,res){
@@ -366,7 +390,7 @@ app.get('/',function(req,res){
   }else{
     res.redirect("/login");
   }
-})
+});
 app.get('/logout', function(req, res){
   req.session.username = null;
   req.session.userID = null;

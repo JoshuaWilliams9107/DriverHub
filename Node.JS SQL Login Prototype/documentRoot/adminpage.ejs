@@ -84,13 +84,34 @@
 
             <p>Your username is <%=username%></p>
             <p>Your userID is <%=userID%></p>
-            <select name="drivers" id = "drivertable">
+            <!-- <select name="drivers" id = "drivertable">
                 <%
                 for(let i = 0; i < drivers.length; i++){
                     %><option value = "<%=drivers[i].Username%>"> <%=drivers[i].Username%></option>
                 <%}%>
+            </select>            -->
+            <table style="width:100%">
+                <tr>
+                  <th>DriverName</th>
+                  <th>Points</th> 
+                  <th>Add Points</th>
+                </tr>
+                <%
+                for(let i = 0; i < drivers.length; i++){
+                    %><tr>
+                        <td><%=drivers[i].Username%></td>
+                        <td><%=drivers[i].Point_Balance%></td>
+                        <td><form method = "POST" action="/submit-form-addpoints">
+                            <label for="pointsToAdd">Points to add:</label>
+                            <input type="text" name="pointsToAdd">
+                            <input type="text" name="driverID" value= <%=drivers[i].idUser%> >
+                            <input type="submit" value="Submit">
+                          </form></td>
+                    </tr><%
+                }
+                %>
+            </table> 
 
-            </select>
         </center>
     </body>
 </html>
