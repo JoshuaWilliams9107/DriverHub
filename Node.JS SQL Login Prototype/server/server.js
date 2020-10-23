@@ -70,7 +70,7 @@ app.post('/submit-form', async(req, res) => {
     let username = req.body.username;
     let password = crypto.createHash('md5').update(req.body.password).digest('hex');;
     let userType = await sqlStatement(`SELECT * FROM User WHERE Username= "${username}" AND Password= "${password}"`);
-    if(userType === false){
+    if(userType.length == 0){
       let login = encodeURIComponent("true");
       req.session.submitNumber +=1;
       res.redirect("/login?failedLogin=" + login)
@@ -256,14 +256,16 @@ app.get('/driver', function(req, res){
           itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
       }).then((data) => {
         console.log(data);
-        res.render("driverpage.ejs",{
-          username: req.session.username,
-          userID: req.session.userID,
-        ebayObj: data});
+        sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+          res.render("driverpage.ejs",{
+            username: req.session.username,
+            userID: req.session.userID,
+            userBalance: value[0].Point_Balance,
+            ebayObj: data});
           // Data is in format of JSON
           // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
-
-});
+          });
+        });
 });
 app.get('/product', function(req, res){
   let productID = req.query.id;
