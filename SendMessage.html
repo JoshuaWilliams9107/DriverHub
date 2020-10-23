@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Catalog</title>
+<title>SendMessage</title>
 	<style>
 		body{
 			margin-left: 10%;
@@ -32,22 +32,21 @@
 			text-decoration: none;
 			font-size: 150%;
 		}
-		#points{
-			border-collapse: collapse;
-			width: 100%;
+		button{
 			text-align: center;
-		}
-		#points td, #points th{
-			border: 1px solid #ddd;
-			padding: 8px;
-		}
-		
-		#points tr:nth-child(even){background-color: #f2f2f2;}
-		
-		#points th{
-			padding-top: 12px;
-			padding-bottom: 12px;
-			background-color: aqua;
+			padding: 50%;
+			vertical-align: middle;
+			text-decoration: none;
+			padding: 16px 32px;
+			display: flex;
+			justify-content: center;
+			font-size: 150%;
+			border: none;
+			background-color: aquamarine;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			
 		}
 	</style>
 </head>
@@ -63,35 +62,20 @@
   		<li><a href="Points.html">Points</a></li>
 		<li><a href="logout">Log Out</a></li>
 	</ul>
-	<ul>
-		<li><a href="Catalog.html">Shop</a></li>
-		<li><a href="PurchaseHistory.html">Purchase History</a></li>
-		<li><a href="Cart.html">Cart</a></li>
-	</ul>
 	
 	<br><br>
 	
-	<table id="points">
-		<tr>
-			<th>Sponsor</th>
-			<th>Points</th>
-			<th>Rate</th>
-		</tr>
-		<tr>
-			<td>Fred Flintstone</td>
-			<td>645</td>
-			<td>1pt = $1.00</td>
-		</tr>
-		<tr>
-			<td>George Jetson</td>
-			<td>812</td>
-			<td>1pt = $0.10</td>
-		</tr>
-		<tr>
-			<td>Yogi Bear</td>
-			<td>36</td>
-			<td>1pt = $1.50</td>
-		</tr>
-	</table>
+	Send message to users. Separate individual users with commas (,)
+	
+	<br>
+	
+	<form>
+		<label for = "user">To: </label>
+		<input type="text" id="user" name="user"><br>
+		<label for = "message">Message:</label><br>
+		<textarea></textarea>
+	</form>
+	
+	<button type="button" value="Send">Send</button>
 </body>
 </html>
