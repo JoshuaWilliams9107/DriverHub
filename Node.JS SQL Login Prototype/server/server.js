@@ -33,6 +33,7 @@ var transporter = nodemailer.createTransport({
   }
 });
 let EBay = require('ebay-node-api');
+const { nextTick } = require('process');
 
 let ebay = new EBay({
   clientID: 'AnthonyF-DriverHu-PRD-3e64e9f22-6d602a3c',
@@ -250,16 +251,37 @@ app.post('/updateApplication', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
     });
+});
+app.get('/signup', function(req, res){
+  res.render('signup.ejs',{
+    userExists: req.query.userExists
+  });
 });
 
 app.get('/forgotpassword', function(req, res){
   res.render('forgotpassword.ejs');
 });
 
+app.get('/recoverycode', function(req, res){
+  res.render('recoverycode.ejs');
+});
+
+app.get('/resetpassword', function(req, res){
+  res.render('resetpassword.ejs');
+});
+app.get('*', function(req, res){
+  console.log(req.path);
+  if(req.path != "/" || req.path != "/login" || req.path != "/signup"){
+    return res.redirect("/login");
+  }else{
+    return next();
+  }
+});
 app.get('/mysponsor', function(req, res){
   sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
     let sql1 = value;
@@ -317,19 +339,8 @@ app.get('/createcompany', function(req, res){
   });
 });
 
-app.get('/recoverycode', function(req, res){
-  res.render('recoverycode.ejs');
-});
 
-app.get('/resetpassword', function(req, res){
-  res.render('resetpassword.ejs');
-});
 
-app.get('/signup', function(req, res){
-  res.render('signup.ejs',{
-    userExists: req.query.userExists
-  });
-});
 
 function adminPage(req,res){
   sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
