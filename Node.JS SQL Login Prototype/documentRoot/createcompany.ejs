@@ -53,12 +53,17 @@
                 vertical-align: middle;
             }
         </style>
+        <script>
+            function displayCreateCompany(){
+
+            }
+        </script>
     </head>
     <body>
         <div id="topnav">
             <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
             
-            <a href="/home" class="active" style="float:left;">Home</a>
+            <a href="/home"  style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
                 <form style="display: inline;overflow:hidden;">
@@ -70,49 +75,21 @@
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="#about" style="float:right;">Cart</a>
-                <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <a href="/mysponsor" class="active" style="float:right;">My Sponsor</a>
                 <a href="#news" style="float:right;">My Profile (<%=username%>)</a>
                 
             </div>
-            
+
           </div>
           <br><br>
         </center>
-        <center><h1>[Insert Catalog API Here]</h1></center>
         <center>
-        <p>You are an Admin.</p>
-
-            <p>Your username is <%=username%></p>
-            <p>Your userID is <%=userID%></p>
-            <!-- <select name="drivers" id = "drivertable">
-                <%
-                for(let i = 0; i < drivers.length; i++){
-                    %><option value = "<%=drivers[i].Username%>"> <%=drivers[i].Username%></option>
-                <%}%>
-            </select>            -->
-            <table style="width:100%">
-                <tr>
-                  <th>DriverName</th>
-                  <th>Points</th> 
-                  <th>Add Points</th>
-                </tr>
-                <%
-                for(let i = 0; i < drivers.length; i++){
-                    %><tr>
-                        <td><%=drivers[i].Username%></td>
-                        <td><%=drivers[i].Point_Balance%></td>
-                        <td><form method = "POST" action="/submit-form-addpoints">
-                            <label for="pointsToAdd">Points to add:</label>
-                            <input type="text" name="pointsToAdd">
-                            <input type="text" name="driverID" value= <%=drivers[i].idUser%> >
-                            <input type="submit" value="Submit">
-                          </form></td>
-                    </tr><%
-                }
-                %>
-            </table> 
-
+            <p>Please type in your company's information</p>
+            <form action="/create-company" method="POST">
+            <input type="text" placeholder="Company Name" name="Company_Name"><br>
+            <input type="text" placeholder="Company Address" name="Company_Address"><br>
+            <input type="submit" value="Create Company"> <br>
+            </form>
         </center>
     </body>
 </html>
-
