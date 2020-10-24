@@ -7,7 +7,8 @@ var con = mysql.createConnection({
   port: 3306,
   user: "admin",
   password: "wZ!2o4PKj",
-  database: "sys"
+  database: "sys",
+  multipleStatements: true
 });
 
 con.connect(function(err) {
@@ -78,13 +79,8 @@ app.post('/submit-form', async(req, res) => {
     }else
     req.session.username = username;
     req.session.userID = userType[0].idUser;
-      if(userType[0].User_Type == "Driver"){
-        return res.redirect("/driver");
-      }else if(userType[0].User_Type == "Admin"){
-        return res.redirect("/admin");
-      }else if(userType[0].User_Type == "Sponsor"){
-        return res.redirect("/sponsor");
-      }
+    req.session.userType = userType[0].User_Type;
+    return res.redirect("/home");
     }else{
       res.send("Too many login attempts, please try again later");
     }
@@ -102,6 +98,7 @@ function sqlStatement(sqlCommand){
    });
    });
 }
+
 app.post('/submit-form-signup', async(req, res) => {
   try {  
     let username = req.body.create_username;
@@ -205,27 +202,136 @@ app.post('/submit-form-new-password', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/create-company', async(req, res) => {
+  try {  
+      //Create a company row in the company database with the company's information (check)
+      //Update the current user's Company_Id to reflect that of the new company, also update application_status to accepted
+      //Application status = {Pending|Complete}
+      let randomCode = Math.round(Math.random() * (99999 - 10000) + 10000);
+      let insert = await sqlStatement(`INSERT INTO Company (Company_Name,Company_Address,Company_Invite_Code) VALUES ("${req.body.Company_Name}","${req.body.Company_Address}",${randomCode})`);
+      let getCompanyID = await sqlStatement(`SELECT * FROM Company WHERE Company_Name = "${req.body.Company_Name}"`);
+      let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Complete" where idUser="${req.session.userID}"`)
+      res.redirect("/mysponsor");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 
+app.post('/join-company', async(req, res) => {
+  try {  
+      //Find's the company ID associated with the join code
+      //updates calling user's company ID and application_Status to Pending
+      let getCompanyID = await sqlStatement(`SELECT * FROM Company WHERE Company_Invite_Code = "${req.body.Company_Invite_Code}"`);
+      let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Pending" where idUser="${req.session.userID}"`)
+      res.redirect("/mysponsor");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/updateApplication', async(req, res) => {
+  try {  
+      //Find's the company ID associated with the join code
+      //updates calling user's company ID and application_Status to Pending
+      console.log(req.body.decision);
+      console.log(req.body.userID);
+      if(req.body.decision == "Accept"){
+        let updateUser = await sqlStatement(`UPDATE User SET Application_Status="Complete" where idUser="${req.body.userID}"`)
+      }else{
+        let updateUser = await sqlStatement(`UPDATE User SET Application_Status=NULL,Company_Id=NULL where idUser="${req.body.userID}"`)
+      }
+      res.redirect("/viewApplications");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
     });
 });
+
 app.get('/forgotpassword', function(req, res){
   res.render('forgotpassword.ejs');
 });
+
+app.get('/mysponsor', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    let sql1 = value;
+    if(value[0].Company_Id){
+      sqlStatement(`SELECT * from Company WHERE CompanyID = ${sql1[0].Company_Id}`).then((value) => {
+        res.render('mysponsor.ejs',{
+            username: req.session.username,
+            userID: req.session.userID,
+            sqlObj: sql1,
+            companySQL : value
+        });
+      });
+    }else{
+      res.render('mysponsor.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        sqlObj: sql1
+    });
+    }
+  });
+});
+app.get('/viewApplications', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    let sql1 = value;
+    if(value[0].Company_Id){
+      sqlStatement(`SELECT * from User WHERE Company_Id = ${sql1[0].Company_Id} AND Application_Status = "Pending"`).then((value) => {
+        res.render('viewapplications.ejs',{
+            username: req.session.username,
+            userID: req.session.userID,
+            sqlObj: sql1,
+            pendingApplication : value
+        });
+      });
+    }else{
+      res.redirect("/home");
+    }
+  });
+});
+app.get('/joincompany', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    res.render('joincompany.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        sqlObj: value
+    });
+  });
+});
+app.get('/createcompany', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    res.render('createcompany.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        sqlObj: value
+    });
+  });
+});
+
 app.get('/recoverycode', function(req, res){
   res.render('recoverycode.ejs');
 });
+
 app.get('/resetpassword', function(req, res){
   res.render('resetpassword.ejs');
 });
+
 app.get('/signup', function(req, res){
   res.render('signup.ejs',{
     userExists: req.query.userExists
   });
 });
-app.get('/admin', function(req, res){
+
+function adminPage(req,res){
   sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
     res.render('adminpage.ejs',{
       username: req.session.username,
@@ -238,8 +344,17 @@ app.get('/admin', function(req, res){
   //  username: req.session.username,
   //  userID: req.session.userID
   //});
+}
+app.get('/home', function(req, res){
+  if(req.session.userType == "Driver"){
+    return driverPage(req,res);
+  }else if(req.session.userType == "Sponsor"){
+    return sponsorPage(req,res);
+  }else if(req.session.userType == "Admin"){
+    return adminPage(req,res);
+  }
 });
-app.get('/driver', function(req, res){
+function driverPage(req, res){
   let pageOffset = '0'
   if(req.query.pageNumber){
     pageOffset = req.query.pageNumber;
@@ -266,7 +381,7 @@ app.get('/driver', function(req, res){
           // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
           });
         });
-});
+}
 app.get('/product', function(req, res){
   let productID = req.query.id;
       ebay.getSingleItem(productID).then((data) => {
@@ -277,15 +392,15 @@ app.get('/product', function(req, res){
           ebayObj: data});
       })
 });
-app.get('/sponsor', function(req, res){
-  getDrivers().then((value) => {
+function sponsorPage(req,res){
+  sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
     res.render('sponsorpage.ejs',{
       username: req.session.username,
       userID: req.session.userID,
       drivers: value
     });
   });
-});
+}
 app.get('/',function(req,res){
   if(req.session.userID){
     res.redirect("/driver");
@@ -296,6 +411,7 @@ app.get('/',function(req,res){
 app.get('/logout', function(req, res){
   req.session.username = null;
   req.session.userID = null;
+  req.session.userType = null;
   res.redirect("/login");
 });
 
