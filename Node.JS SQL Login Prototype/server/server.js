@@ -237,8 +237,7 @@ app.post('/updateApplication', async(req, res) => {
   try {  
       //Find's the company ID associated with the join code
       //updates calling user's company ID and application_Status to Pending
-      console.log(req.body.decision);
-      console.log(req.body.userID);
+
       if(req.body.decision == "Accept"){
         let updateUser = await sqlStatement(`UPDATE User SET Application_Status="Complete" where idUser="${req.body.userID}"`)
       }else{
@@ -251,7 +250,21 @@ app.post('/updateApplication', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
-
+app.post('/updatePointExchange', async(req, res) => {
+  try {  
+      //Find's the company ID associated with the join code
+      //updates calling user's company ID and application_Status to Pending
+        console.log(req.body.Points_To_Dollar);
+        console.log(req.body.companyID);
+        let updatePoints = await sqlStatement(`UPDATE Company SET Points_To_Dollar=${req.body.Points_to_Dollar} where CompanyID="${req.body.companyID}"`)
+     
+      res.redirect("/editCatalog");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
@@ -274,10 +287,18 @@ app.get('/recoverycode', function(req, res){
 app.get('/resetpassword', function(req, res){
   res.render('resetpassword.ejs');
 });
-app.get('*', function(req, res){
+app.get('/logout', function(req, res){
+  req.session.username = null;
+  req.session.userID = null;
+  req.session.userType = null;
+  res.redirect("/login");
+});
+app.get('*', function(req, res, next){
   console.log(req.path);
-  if(req.path != "/" || req.path != "/login" || req.path != "/signup"){
+  if(!req.session.userID){
+  if(req.path != "/" || req.path != "/login" || req.path != "/signup" || req.path != "/logout"){
     return res.redirect("/login");
+  }
   }else{
     return next();
   }
@@ -300,6 +321,23 @@ app.get('/mysponsor', function(req, res){
         userID: req.session.userID,
         sqlObj: sql1
     });
+    }
+  });
+});
+app.get('/editCatalog', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    let sql1 = value;
+    if(value[0].Company_Id){
+      sqlStatement(`SELECT * from Company WHERE CompanyID = ${sql1[0].Company_Id}`).then((value) => {
+        res.render('editcatalog.ejs',{
+            username: req.session.username,
+            userID: req.session.userID,
+            sqlObj: sql1,
+            companySQL : value
+        });
+      });
+    }else{
+      res.redirect("/home");
     }
   });
 });
@@ -382,14 +420,22 @@ function driverPage(req, res){
           itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
       }).then((data) => {
         console.log(data);
-        sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
-          res.render("driverpage.ejs",{
-            username: req.session.username,
-            userID: req.session.userID,
-            userBalance: value[0].Point_Balance,
-            ebayObj: data});
-          // Data is in format of JSON
-          // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+          sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+                for(let i = 0; i < data[0].searchResult[0].item.length; i++){
+                  data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
+                }
+                res.render("driverpage.ejs",{
+                  username: req.session.username,
+                  userID: req.session.userID,
+                  userBalance: value[0].Point_Balance,
+                  ebayObj: data,
+                  companySQL: companyObj});
+                // Data is in format of JSON
+                // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+              });
+            });
           });
         });
 }
@@ -397,11 +443,22 @@ app.get('/product', function(req, res){
   let productID = req.query.id;
       ebay.getSingleItem(productID).then((data) => {
         console.log(data);
-        res.render("productpage.ejs",{
-          username: req.session.username,
-          userID: req.session.userID,
-          ebayObj: data});
-      })
+          sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+                data.Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data.Item.ConvertedCurrentPrice.Value).toFixed(2);
+                res.render("productpage.ejs",{
+                  username: req.session.username,
+                  userID: req.session.userID,
+                  userBalance: value[0].Point_Balance,
+                  ebayObj: data,
+                  companySQL: companyObj});
+                // Data is in format of JSON
+                // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+              });
+            });
+          });
+  });
 });
 function sponsorPage(req,res){
   sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
@@ -419,12 +476,7 @@ app.get('/',function(req,res){
     res.redirect("/login");
   }
 });
-app.get('/logout', function(req, res){
-  req.session.username = null;
-  req.session.userID = null;
-  req.session.userType = null;
-  res.redirect("/login");
-});
+
 
 //test
 //app.get('/', (req, res) => {
