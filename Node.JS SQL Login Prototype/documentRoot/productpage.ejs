@@ -113,7 +113,7 @@
         <center>
             <img src = "<%=ebayObj.Item.PictureURL[0]%>">
             <p><%=ebayObj.Item.Title%></p>
-            <p>$<%=ebayObj.Item.ConvertedCurrentPrice.Value%></p>
+            <p><%=ebayObj.Item.ConvertedCurrentPrice.Value%> Points</p>
             <%for(let i = 0; i < ebayObj.Item.ItemSpecifics.NameValueList.length; i++){%>
             <p><%=ebayObj.Item.ItemSpecifics.NameValueList[i].Name%> : <%=ebayObj.Item.ItemSpecifics.NameValueList[i].Value[0]%></p>
             <%}%>

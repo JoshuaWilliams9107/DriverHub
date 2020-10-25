@@ -131,7 +131,7 @@
                     <%if(ebayObj[0].searchResult[0].item[i].subtitle){%>
                     <p><%=ebayObj[0].searchResult[0].item[i].subtitle[0]%></p>
                     <%}%>
-                    <p style="font-weight: bolder; font-size:22px;">$<%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%></p>
+                    <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
                 </div>
                 </div>
          <%}else{%>
@@ -145,7 +145,7 @@
                         <div style="display: inline-block;">
                             <a href = "/product?id=<%=  %>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
                             <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
-                            <p style="font-weight: bolder; font-size:22px;">$<%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%></p>
+                            <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
                         </div>
                 </div>
          <%}}}else{%>
