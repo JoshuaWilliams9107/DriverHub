@@ -81,15 +81,15 @@
         <div id="topnav">
             <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
             
-            <a href="#home" class="active" style="float:left;">Home</a>
+            <a href="/home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
                 
             </div>
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
-                <a href="#about" style="float:right;">Cart</a>
-                <a href="#contact" style="float:right;">My Sponsor</a>
+                <a href="/cart" style="float:right;">Cart</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
                 <a href="#news" style="float:right;">My Profile (<%=username%>)</a>
                 
             </div>
@@ -117,7 +117,10 @@
             <%for(let i = 0; i < ebayObj.Item.ItemSpecifics.NameValueList.length; i++){%>
             <p><%=ebayObj.Item.ItemSpecifics.NameValueList[i].Name%> : <%=ebayObj.Item.ItemSpecifics.NameValueList[i].Value[0]%></p>
             <%}%>
-            <button style="font-size:20px;">Add to Cart</button>
+            <form action="/addToCart" method="POST">
+                <input name="itemID" type="hidden" value="<%=ebayObj.Item.ItemID%>">
+                <input type="submit" value="Add to Cart" name="decision"><br>
+            </form>
         </center>
         </div>
     </body>
