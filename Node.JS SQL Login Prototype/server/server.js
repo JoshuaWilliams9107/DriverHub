@@ -67,7 +67,6 @@ app.post('/submit-form', async(req, res) => {
   if(!req.session.submitNumber){
     req.session.submitNumber = 0;
   }
-  console.log(req.session.submitNumber);
   if(req.session.submitNumber < 5){
     let username = req.body.username;
     let password = crypto.createHash('md5').update(req.body.password).digest('hex');;
@@ -130,9 +129,7 @@ app.post('/submit-form-signup', async(req, res) => {
 app.post('/submit-form-addpoints', async(req, res) => {
   try {  
     let userID = req.body.driverID;
-    console.log(userID);
     let points = req.body.pointsToAdd;
-    console.log(points);
     let sql = `UPDATE User SET Point_Balance = Point_Balance + ${points} WHERE idUser = ${userID}`
 
     con.query(sql, function (err, result) {
@@ -179,7 +176,6 @@ app.post('/submit-form-reset-password', async(req, res) => {
 app.post('/submit-form-recover-code', async(req, res) => {
   try {  
     let recover = await sqlStatement(`SELECT * FROM User where Password_Reset= ${req.body.code}`);
-    console.log(recover[0].Username);
     if(recover.length == 0){
       res.redirect("/recoverycode?code=false");
     }
@@ -254,8 +250,6 @@ app.post('/updatePointExchange', async(req, res) => {
   try {  
       //Find's the company ID associated with the join code
       //updates calling user's company ID and application_Status to Pending
-        console.log(req.body.Points_To_Dollar);
-        console.log(req.body.companyID);
         let updatePoints = await sqlStatement(`UPDATE Company SET Points_To_Dollar=${req.body.Points_to_Dollar} where CompanyID="${req.body.companyID}"`)
      
       res.redirect("/editCatalog");
@@ -265,6 +259,31 @@ app.post('/updatePointExchange', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/addToCart', async(req, res) => {
+  try {  
+        if(!req.session.cart){
+          req.session.cart = [];
+        }
+        req.session.cart.push(req.body.itemID);
+        console.log(req.session.cart);
+        res.redirect('back');
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/removeFromCart', async(req, res) => {
+  try {  
+        req.session.cart.splice(req.body.index,1);
+        res.redirect('back');
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
@@ -291,10 +310,10 @@ app.get('/logout', function(req, res){
   req.session.username = null;
   req.session.userID = null;
   req.session.userType = null;
+  req.session.cart = null;
   res.redirect("/login");
 });
 app.get('*', function(req, res, next){
-  console.log(req.path);
   if(!req.session.userID){
   if(req.path != "/" || req.path != "/login" || req.path != "/signup" || req.path != "/logout"){
     return res.redirect("/login");
@@ -376,10 +395,40 @@ app.get('/createcompany', function(req, res){
     });
   });
 });
-
-
-
-
+app.get('/cart', function(req, res){
+  //this isn't done
+  //need to run getSingleItem a variable amount of times
+      getCartInfo(req).then((data) => {
+          sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+                if(data){
+                  for(let i = 0; i < data.length; i++){
+                    data[i].Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data[i].Item.ConvertedCurrentPrice.Value).toFixed(2);
+                  }
+                }
+                console.log(data);
+                res.render("cart.ejs",{
+                  username: req.session.username,
+                  userID: req.session.userID,
+                  userBalance: value[0].Point_Balance,
+                  ebayObj: data,
+                  companySQL: companyObj});
+              });
+            });
+          });
+      });
+    });
+async function getCartInfo(req){
+  let ebayObjArray = [];
+  if(!req.session.cart){
+    return null;
+  }
+  for(let i = 0; i < req.session.cart.length; i++){
+    ebayObjArray.push(await ebay.getSingleItem(req.session.cart[i]));
+  }
+  return ebayObjArray;
+}
 function adminPage(req,res){
   sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
     res.render('adminpage.ejs',{
@@ -419,7 +468,6 @@ function driverPage(req, res){
           pageNumber: parseInt(pageOffset)+1,
           itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
       }).then((data) => {
-        console.log(data);
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
               sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
@@ -442,7 +490,6 @@ function driverPage(req, res){
 app.get('/product', function(req, res){
   let productID = req.query.id;
       ebay.getSingleItem(productID).then((data) => {
-        console.log(data);
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
               sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
