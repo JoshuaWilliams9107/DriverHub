@@ -144,7 +144,7 @@ app.post('/submit-form-addpoints', async(req, res) => {
     if (err){
       throw err;
     }else{
-      res.redirect("http://localhost:3000/home")
+      res.redirect("http://52.87.231.160/home")
     }
     });
   }catch (e) {
@@ -351,6 +351,7 @@ app.get('/mysponsor', function(req, res){
     }
   });
 });
+
 app.get('/editCatalog', function(req, res){
   sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
     let sql1 = value;
