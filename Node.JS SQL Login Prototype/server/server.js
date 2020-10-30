@@ -130,13 +130,21 @@ app.post('/submit-form-addpoints', async(req, res) => {
   try {  
     let userID = req.body.driverID;
     let points = req.body.pointsToAdd;
+    
+  var d = new Date();
+  var n = d.getTime();
+    fs = require('fs');
+    fs.appendFile('test.txt',`Added ${points} to User ${userID} at time ${n}\n`, function(err){
+      if(err) return console.log(err);
+    });
+
     let sql = `UPDATE User SET Point_Balance = Point_Balance + ${points} WHERE idUser = ${userID}`
 
     con.query(sql, function (err, result) {
     if (err){
       throw err;
     }else{
-      res.redirect("http://localhost:3000/admin?fname=")
+      res.redirect("http://localhost:3000/home")
     }
     });
   }catch (e) {
