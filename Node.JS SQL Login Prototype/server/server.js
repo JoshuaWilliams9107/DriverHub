@@ -469,21 +469,37 @@ function driverPage(req, res){
           itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
       }).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
-            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
-              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+            sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+            if(userObj[0].Application_Status == "Complete"){
+              sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+              
+                
                 for(let i = 0; i < data[0].searchResult[0].item.length; i++){
                   data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
                 }
+
                 res.render("driverpage.ejs",{
                   username: req.session.username,
                   userID: req.session.userID,
                   userBalance: value[0].Point_Balance,
                   ebayObj: data,
-                  companySQL: companyObj});
+                  companySQL: companyObj,
+                  userSQL: userObj});
                 // Data is in format of JSON
                 // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
               });
-            });
+            }else{
+            res.render("driverpage.ejs",{
+              username: req.session.username,
+              userID: req.session.userID,
+              userBalance: value[0].Point_Balance,
+              ebayObj: data,
+              companySQL: null,
+              userSQL: userObj});
+            // Data is in format of JSON
+            // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+          }
+          });
           });
         });
 }
@@ -518,7 +534,7 @@ function sponsorPage(req,res){
 }
 app.get('/',function(req,res){
   if(req.session.userID){
-    res.redirect("/driver");
+    res.redirect("/home");
   }else{
     res.redirect("/login");
   }
