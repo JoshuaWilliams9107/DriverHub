@@ -99,7 +99,7 @@
                     <td><form method = "POST" action="/submit-form-addpoints">
                         <label for="pointsToAdd">Points to add:</label>
                         <input type="text" name="pointsToAdd">
-                        <input type="text" name="driverID" value= <%=drivers[i].idUser%> >
+                        <input type="hidden" name="driverID" value= <%=drivers[i].idUser%> >
                         <input type="submit" value="Submit">
                       </form></td>
                 </tr><%
