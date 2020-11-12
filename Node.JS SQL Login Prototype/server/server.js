@@ -139,7 +139,6 @@ app.post('/submit-form-addpoints', async(req, res) => {
     }
   });
 
-    let sql = `UPDATE User SET Point_Balance = Point_Balance + ${points} WHERE idUser = ${userID}`
 
     con.query(sql, function (err, result) {
     if (err){
