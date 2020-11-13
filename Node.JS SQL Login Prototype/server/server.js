@@ -657,11 +657,17 @@ function driverPage(req, res){
     searchKeyword = req.query.search;
   }
   sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((company) => {
+    let catalogRule = "";
+    if(company[0].Catalog_Rule){
+      catalogRule = company[0].Catalog_Rule + " 99 26395";
+    }else{
+      catalogRule= "99 26395";
+    }
       ebay.findItemsAdvanced({
           keywords: searchKeyword,
           entriesPerPage: 10,
           pageNumber: parseInt(pageOffset)+1,
-          ExcludeCategory: company[0].Catalog_Rule +" 99 26395"
+          ExcludeCategory: catalogRule
       }).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`select * from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
