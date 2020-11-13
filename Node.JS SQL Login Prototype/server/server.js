@@ -487,6 +487,32 @@ app.get('/createcompany', function(req, res){
     });
   });
 });
+app.get('/reports', function(req, res){
+  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    let sql1 = value;
+    res.render("reports.ejs",{
+      username: req.session.username,
+      report: null
+    });
+  });
+ 
+})
+app.post('/generateReport', async(req, res) => {
+  let report_Type = req.body.reportType;
+  console.log("report type is: " + report_Type);
+  let report = await sqlStatement(`SELECT * FROM Transaction_history`);
+  if(report.length == 0){
+    res.send("no reports");
+  }
+  else{
+    res.render("reports.ejs",{
+      username: req.session.username,
+      report: report 
+    });
+  }
+  res.redirect('back');
+  return;
+})
 app.get('/cart', function(req, res){
   //this isn't done
   //need to run getSingleItem a variable amount of times
