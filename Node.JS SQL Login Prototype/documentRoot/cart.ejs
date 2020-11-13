@@ -112,6 +112,11 @@
         <div style ="background-color: white;margin-left:10%;margin-right:10%;">
             <%
             if(ebayObj){%>
+                <form action="/checkout" method="POST">
+                    <input name="point_balance" type="hidden" value="<%=userBalance%>">
+                    <input name="userName" type="hidden" value="<%=username%>">
+                    <input type="submit" value="Checkout" name="decision"><br>
+                </form>
             <%for(let i = 0; i < ebayObj.length; i++){
                 if(ebayObj[i].Item.PictureURL[0]){%>
                     <%if(i == ebayObj.length - 1){%>
