@@ -57,13 +57,51 @@
         </style>
         <script>
             const params = new URLSearchParams(window.location.search);
-            let pageNumber = params.get('pageNumber');
+            let pageNumber = parseInt(params.get('pageNumber'));
             let search = params.get('search');
             if(!pageNumber){
                 pageNumber = 0;
             }
+            function setButtons(){
+                if(pageNumber-4 < 0){
+                    document.getElementById("middle-4").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-4").innerHTML = pageNumber-3;
+                }
+                if(pageNumber-3 < 0){
+                    document.getElementById("middle-3").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-3").innerHTML = pageNumber-2;
+                }
+                 if(pageNumber-2 < 0){
+                    document.getElementById("middle-2").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-2").innerHTML = pageNumber-1;
+                }
+                if(pageNumber-1 < 0){
+                    document.getElementById("middle-1").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-1").innerHTML = pageNumber;
+                }
+                document.getElementById("middle").innerHTML = pageNumber+1;
+                document.getElementById("middle+1").innerHTML = pageNumber+2;
+                document.getElementById("middle+2").innerHTML = pageNumber+3;
+                document.getElementById("middle+3").innerHTML = pageNumber+4;
+                document.getElementById("middle+4").innerHTML = pageNumber+5;
+                console.log("Hello");
+            }
+            function JumpPageText(){
+                if(parseInt(document.getElementById("jump").value)){
+                    pageNumber = parseInt(document.getElementById("jump").value)-1;
+                    window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+                }
+            }
             function NextPage() {
                 pageNumber++;
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+            };
+            function JumpPage(location) {
+                pageNumber+=location;
                 window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
             };
             function PreviousPage() {
@@ -75,6 +113,7 @@
             function Search() {
                 window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + 0 + "&" + "search=" + document.getElementById("searchText").value;
             };
+            window.onload = setButtons;
         </script>
     </head>
     <body>
@@ -159,10 +198,25 @@
                 <%}%>
 
         </div>
+        <center>
         <div style="padding-bottom:100px;padding-top: 20px;">
-            <button style="float:right;margin-right:10%;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();" >&#8250;</button>
-            <button style="float:left;margin-left:10%;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button>
+            <table style="margin-left: auto;margin-right: auto;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;">
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-4" Onclick="JumpPage(-4);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-3" Onclick="JumpPage(-3);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-2" Onclick="JumpPage(-2);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-1" Onclick="JumpPage(-1);" ></button></th>
+                <th><button style="font-size:40px;background-color: #144879;color:white;font-weight: bold;"type="button" id="middle" Onclick="JumpPage(0);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+1" Onclick="JumpPage(1);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+2" Onclick="JumpPage(2);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+3" Onclick="JumpPage(3);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+4" Onclick="JumpPage(4);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();">&#8250;</button></th>
+            </table>
+            <input id="jump" placeholder="#" size="2" style="font-size:30px;">
+            <button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="JumpPageText();">&#8250;</button>
         </div>
+        </center>
     </body>
 </html>
 
