@@ -1,5 +1,4 @@
 var mysql = require('mysql');
-var fs = require('fs');
 
 
 var con = mysql.createConnection({
@@ -137,12 +136,13 @@ app.post('/submit-form-addpoints', async(req, res) => {
     
   var d = new Date();
   var n = d.getTime();
-    fs = require('fs');
-    fs.appendFile('test.txt',`Added ${points} to User ${userID} at time ${n}\n`, function(err){
-      if(err) return console.log(err);
-    });
+  let sql = `INSERT INTO Transaction_history (userid, Time_Purchased, Amount) VALUES (\"${userID}\",\"${n}\",\"${points}\")`
+  con.query(sql, function (err, result) {
+    if(err){
+      throw err;
+    }
+  });
 
-    let sql = `UPDATE User SET Point_Balance = Point_Balance + ${points} WHERE idUser = ${userID}`
 
     con.query(sql, function (err, result) {
     if (err){
