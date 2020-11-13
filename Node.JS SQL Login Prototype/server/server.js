@@ -131,6 +131,28 @@ app.post('/submit-form-signup', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/submit-form-signup-driver-for-sponsor', async(req, res) => {
+  try {  
+    let username = req.body.create_username;
+    username = username.toLowerCase();
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
+    let numberOfExistingUsers = await sqlStatement(`SELECT * FROM User where Username= "${username}"`);
+    if(numberOfExistingUsers.length > 0){
+      let login = encodeURIComponent("true");
+      res.redirect("/signupDriver?userExists=" + login)
+      return;
+    }
+    let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type,Birth_Date) VALUES (
+    \"${req.body.email}\",\"${req.body.first_name}\",\"${req.body.last_name}\",
+    \"${username}\",\"${password}\",\"Driver",\"${req.body.birthday}\")`;
+    let signup = await sqlStatement(sql);
+    let user = await sqlStatement(`SELECT * FROM User WHERE Username="${username}"`)
+    let relationship = await sqlStatement(`INSERT INTO User_To_Company (idUser,Company_Id,Application_Status) VALUES ("${user[0].idUser}","${req.session.companyID}","Complete")`)
+    res.redirect("/mysponsor");
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 
 app.post('/submit-form-addpoints', async(req, res) => {
   try {  
@@ -472,6 +494,11 @@ app.get('/mysponsor', function(req, res){
   });
 });
 
+app.get('/signupDriver', function(req, res){
+  res.render('signupdriverforcompany.ejs',{
+    userExists: req.query.userExists
+  });
+});
 app.get('/editCatalog', function(req, res){
   sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
     sqlStatement(`SELECT * from User_To_Company WHERE idUser = ${req.session.userID}`).then((companyID) => {
@@ -611,8 +638,8 @@ function driverPage(req, res){
           ExcludeCategory: company[0].Catalog_Rule +" 99 26395"
       }).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
-            sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
-            if(userObj[0].Application_Status == "Complete"){
+            sqlStatement(`select * from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
+            if(value[0].Application_Status == "Complete"){
               sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
                
                 
@@ -626,7 +653,7 @@ function driverPage(req, res){
                   userBalance: value[0].Point_Balance,
                   ebayObj: data,
                   companySQL: companyObj,
-                  userSQL: userObj});
+                  userSQL: value});
                 // Data is in format of JSON
                 // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
               });
@@ -637,7 +664,7 @@ function driverPage(req, res){
               userBalance: value[0].Point_Balance,
               ebayObj: data,
               companySQL: null,
-              userSQL: userObj});
+              userSQL: value});
             // Data is in format of JSON
             // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
           }
