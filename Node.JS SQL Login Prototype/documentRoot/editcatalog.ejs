@@ -85,13 +85,57 @@
         </center>
         <center>
             
-            <p>Edit USD to Point Exchange Rate:</p><br>
+            <p style="font-weight: bold;">Edit USD to Point Exchange Rate:</p><br>
             <p>$1=</p>
             <form action="/updatePointExchange" method="POST">
                     <input name="companyID" type="hidden" value="<%=companySQL[0].CompanyID%>">
                     <input type="text" style="display: inline;white-space:nowrap;" name="Points_to_Dollar" value="<%=companySQL[0].Points_to_Dollar%>">
                     <p>points</p><br>
                     <input type="submit" value="Update" name="submit"><br>
+            </form>
+            <p style="font-weight: bold;">Toggle Catalog Categories:</p><br>
+            <form action="/updateCategories" method="POST">
+                <input type="checkbox" id="Art" name="Art" value="550" checked>
+                <label for="Art">Art</label><br>
+                <input type="checkbox" id="Books" name="Books" value="267" checked>
+                <label for="Books">Books</label><br>
+                <input type="checkbox" id="Business_and_Industrial" name="Business_and_Industrial" value="12576" checked>
+                <label for="Business_and_Industrial">Business & Industrial</label><br>
+                <input type="checkbox" id="Cameras_and_Photo" name="Cameras_and_Photo" value="625" checked>
+                <label for="Cameras_and_Photo">Cameras & Photo</label><br>
+                <input type="checkbox" id="Cell_Phones_and_Accessories" name="Cell_Phones_and_Accessories" value="15032" checked>
+                <label for="Cell_Phones_and_Accessories">Cell Phones & Accessories</label><br>
+                <input type="checkbox" id="Clothing_Shoes_and_Accessories" name="Clothing_Shoes_and_Accessories" value="11450" checked>
+                <label for="Clothing_Shoes_and_Accessories">Clothing, Shoes & Accessories</label><br>
+                <input type="checkbox" id="Collectibles" name="Collectibles" value="1" checked>
+                <label for="">Collectibles</label><br>
+                <input type="checkbox" id="ComputersTablets_and_Networking" name="ComputersTablets_and_Networking" value="58058" checked>
+                <label for="ComputersTablets_and_Networking">Computers/Tablets & Networking</label><br>
+                <input type="checkbox" id="Consumer_Electronics" name="Consumer_Electronics" value="293" checked>
+                <label for="Consumer_Electronics">Consumer Electronics</label><br>
+                <input type="checkbox" id="Crafts" name="Crafts" value="14339" checked>
+                <label for="Crafts">Crafts</label><br>
+                <input type="checkbox" id="DVDs_and_Movies" name="DVDs_and_Movies" value="11232" checked>
+                <label for="DVDs_and_Movies">DVDs & Movies</label><br>
+                <input type="checkbox" id="Entertainment_Memorabilia" name="Entertainment_Memorabilia" value="45100" checked>
+                <label for="Entertainment_Memorabilia">Entertainment Memorabilia</label><br>
+                <input type="checkbox" id="Gift_Cards_and_Coupons" name="Gift_Cards_and_Coupons" value="172008" checked>
+                <label for="Gift_Cards_and_Coupons">Gift Cards & Coupons</label><br>
+                <input type="checkbox" id="Home_and_Garden" name="Home_and_Garden" value="11700" checked>
+                <label for="Home_and_Garden">Home & Garden</label><br>
+                <input type="checkbox" id="Jewelry_and_Watches" name="Jewelry_and_Watches" value="281" checked>
+                <label for="Jewelry_and_Watches">Jewelry & Watches</label><br>
+                <input type="checkbox" id="Music" name="Music" value="11233" checked>
+                <label for="Music">Music</label><br>
+                <input type="checkbox" id="Sporting_Goods" name="Sporting_Goods" value="888" checked>
+                <label for="Sporting_Goods">Sporting Goods</label><br>
+                <input type="checkbox" id="Sports_Mem_Cards_and_Fan_Shop" name="Sports_Mem_Cards_and_Fan_Shop" value="64482" checked>
+                <label for="Sports_Mem_Cards_and_Fan_Shop">Sports Mem, Cards & Fan Shop</label><br>
+                <input type="checkbox" id="Toys_and_Hobbies" name="Toys_and_Hobbies" value="220" checked>
+                <label for="Toys_and_Hobbies">Toys & Hobbies</label><br>
+                <input type="checkbox" id="Video_Games_and_Consoles" name="Video_Games_and_Consoles" value="124" checked>
+                <label for="Video_Games_and_Consoles">Video Games & Consoles</label><br>
+                <input type="submit" value="Update" name="submit"><br>
             </form>
             
             

@@ -15,6 +15,7 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+const { makeRequest } = require('./node_modules/ebay-node-api/src/request');
 const express = require('express')
 var request = require("request")
 const app = express()
@@ -224,6 +225,55 @@ app.post('/create-company', async(req, res) => {
       let addRelationship = await sqlStatement(`INSERT INTO User_To_Company (idUser,Company_Id,Application_Status) VALUES (${req.session.userID},${getCompanyID[0].CompanyID},"Complete")`);
       //let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Complete" where idUser="${req.session.userID}"`)
       res.redirect("/mysponsor");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/updateCategories', async(req, res) => {
+  try {  
+    let outputString = "";
+    if(!req.body.Art)
+    outputString+=" 550";
+    if(!req.body.Books)
+    outputString+=" 267";
+    if(!req.body.Business_and_Industrial)
+    outputString+=" 12576";
+    if(!req.body.Cameras_and_Photo)
+    outputString+=" 625";
+    if(!req.body.Cell_Phones_and_Accessories)
+    outputString+=" 15032";
+    if(!req.body.Clothing_Shoes_and_Accessories)
+    outputString+=" 11450";
+    if(!req.body.ComputersTablets_and_Networking)
+    outputString+=" 58058";
+    if(!req.body.Consumer_Electronics)
+    outputString+=" 293";
+    if(!req.body.DVDs_and_Movies)
+    outputString+=" 11232";
+    if(!req.body.Entertainment_Memorabilia)
+    outputString+=" 45100";
+    if(!req.body.Gift_Cards_and_Coupons)
+    outputString+=" 172008";
+    if(!req.body.Home_and_Garden)
+    outputString+=" 11700";
+    if(!req.body.Jewelry_and_Watches)
+    outputString+=" 281";
+    if(!req.body.Sporting_Goods)
+    outputString+=" 888";
+    if(!req.body.Sports_Mem_Cards_and_Fan_Shop)
+    outputString+=" 64482";
+    if(!req.body.Toys_and_Hobbies)
+    outputString+=" 220";
+    if(!req.body.Video_Games_and_Consoles)
+    outputString+=" 1249";
+    if(outputString.length > 0){
+    outputString = outputString.substring(1);
+    }
+    console.log(outputString);
+    let addRelationship = await sqlStatement(`UPDATE Company SET Catalog_Rule="${outputString}" where CompanyID="${req.session.companyID}"`);
+      res.redirect('back');
       return;
     return;
   }catch (e) {
@@ -579,18 +629,18 @@ function driverPage(req, res){
   if(req.query.search){
     searchKeyword = req.query.search;
   }
-
-      ebay.findItemsByKeywords({
+  sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((company) => {
+      ebay.findItemsAdvanced({
           keywords: searchKeyword,
           entriesPerPage: 10,
           pageNumber: parseInt(pageOffset)+1,
-          itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
+          ExcludeCategory: company[0].Catalog_Rule +" 99 26395"
       }).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
             if(userObj[0].Application_Status == "Complete"){
               sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
-              
+               
                 
                 for(let i = 0; i < data[0].searchResult[0].item.length; i++){
                   data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
@@ -620,6 +670,7 @@ function driverPage(req, res){
           });
         });
         });
+      });
 }
 app.get('/product', function(req, res){
   let productID = req.query.id;
