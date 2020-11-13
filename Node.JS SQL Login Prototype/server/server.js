@@ -20,6 +20,7 @@ var request = require("request")
 const app = express()
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3000
 var session = require("express-session");
 var nodemailer = require('nodemailer');
@@ -33,6 +34,7 @@ var transporter = nodemailer.createTransport({
 });
 let EBay = require('ebay-node-api');
 const { nextTick } = require('process');
+const { RSA_NO_PADDING } = require('constants');
 
 let ebay = new EBay({
   clientID: '***REMOVED***',
@@ -281,6 +283,46 @@ app.post('/addToCart', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/checkout', async(req, res) => {
+  try {
+    // let ebayObjArray = req.body.ebayObjectArr
+    // console.log("ebay object array length is: " + ebayObjArray.length)
+    // for(let j = 0, leen = ebayObjArray.length; j < leen; j++){
+    //   console.log("i'm in the cart!!");
+    //   console.log("I am: " + Object.keys(ebayObjArray[j]));
+    // } 
+    let userName = req.body.userName;
+    let pointBalance = parseFloat(req.body.point_balance);
+    console.log("Point balance is: " + pointBalance);
+      console.log("cart length is: " + req.session.cart.length);
+      let ebayObjArray = [];
+      for(let i = 0; i < req.session.cart.length; i++){
+        ebayObjArray.push(await ebay.getSingleItem(req.session.cart[i]));
+      }
+      let totalPrice = 0;
+      for(let i = 0; i < ebayObjArray.length; i++){
+        console.log("current price is: " + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value));
+        totalPrice = totalPrice + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value)
+      }
+      console.log("the total price is: " + totalPrice);
+      if(totalPrice > pointBalance){
+        res.send("you don't have enough points");
+        return;
+      }
+      for(let i = 0, len = req.session.cart.length; i < len; i++){
+        req.session.cart.splice(0,1);
+      }
+      let date = new Date().toLocaleString();
+      let getUser = await sqlStatement(`SELECT * FROM User WHERE Username = "${userName}"`);
+      let insert = await sqlStatement(`INSERT INTO Transaction_history (UserID,Time_Purchased,Amount,Company,UserName) VALUES ("${getUser[0].idUser}","${date}","${totalPrice}","${getUser[0].Company_Id}","${userName}")`);
+      res.redirect('back');
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
 app.post('/removeFromCart', async(req, res) => {
   try {  
         req.session.cart.splice(req.body.index,1);
