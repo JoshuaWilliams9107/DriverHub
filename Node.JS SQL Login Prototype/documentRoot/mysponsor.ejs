@@ -85,7 +85,7 @@
         </center>
         <center>
             <%if(sqlObj[0].User_Type == "Sponsor"){
-            if(!sqlObj[0].Company_Id){%>
+            if(!User_To_Company){%>
             <p>It appears you haven't yet created/joined a company, would you like to create/join one?</p>
             <form action="/createCompany">
                 <input type="submit" value="create company" /><br>
@@ -94,7 +94,7 @@
                 <input type="submit" value="join company" /><br>
             </form>
             <%}}else if (sqlObj[0].User_Type == "Driver"){
-                if(!sqlObj[0].Company_Id){%>
+                if(!User_To_Company){%>
             <p>It appears you haven't yet joined a company, would you like to join one?</p>
             <p>If so please type in your company's join code to submit an application.</p>
             <form action="/join-company" method="POST">
@@ -102,12 +102,12 @@
             <input type="submit" value="Join Company"> <br>
             </form>
             <%}}%>
-            <%if(sqlObj[0].Company_Id){%>
+            <%if(User_To_Company){%>
                 <%if(sqlObj[0].User_Type == "Sponsor"){%>
-                    <%if(sqlObj[0].Application_Status == "Pending"){%>
+                    <%if(User_To_Company[0].Application_Status == "Pending"){%>
                         <p>Your Application is under manual review</p>
                         <%}else{%>
-                        <p>Your Company_Id is: <%=sqlObj[0].Company_Id%></p>
+                        <p>Your Company_Id is: <%=User_To_Company[0].Company_Id%></p>
                         <p>Your Company Invite Code is: <%=companySQL[0].Company_Invite_Code%></p>
                         <form action="/viewApplications">
                             <input type="submit" value="View Applications" /><br>
@@ -118,12 +118,29 @@
                         <%}%>
                 <%}%>
                 <%if(sqlObj[0].User_Type == "Driver"){%>
-                    <%if(sqlObj[0].Application_Status == "Pending"){%>
+                    <%for(let i = 0; i < User_To_Company.length; i++){%>
+                    <%if(User_To_Company[i].Application_Status == "Pending"){%>
                         <p>Your Application is under manual review</p>
+                        <br>
                         <%}else{%>
-                        <p>Your Company_Id is: <%=sqlObj[0].Company_Id%></p>
-                        <%}%>
+                        <p>Your Company_Id is: <%=User_To_Company[i].Company_Id%></p>
+                        <%if(companySession == User_To_Company[i].Company_Id){%>
+                            <p>Your current Active Company</p>
+                            <br>
+                        <%}else{%>
+                        <form action="/changeActiveCompany" method="POST">
+                            <input type="hidden" value="<%=User_To_Company[i].Company_Id%>" name="company">
+                            <button type="submit">Set As Active Company</button>
+                        </form>
+                        <br>
+                        <%}}%>
+                    <%}%>
+                    <p>Would you like to join another Company?</p>
+                    <form action="/join-company" method="POST">
+                    <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
+                    <input type="submit" value="Join Company"> <br>
                 <%}%>
+                
             <%}%>
         </center>
     </body>

@@ -80,6 +80,10 @@ app.post('/submit-form', async(req, res) => {
     req.session.username = username;
     req.session.userID = userType[0].idUser;
     req.session.userType = userType[0].User_Type;
+    let relationshipSQL = await sqlStatement(`SELECT * FROM User_To_Company WHERE idUser="${req.session.userID}"`);
+    if(relationshipSQL.length > 0){
+      req.session.companyID = relationshipSQL[0].Company_Id;
+    }
     return res.redirect("/home");
     }else{
       res.send("Too many login attempts, please try again later");
@@ -215,7 +219,8 @@ app.post('/create-company', async(req, res) => {
       let randomCode = Math.round(Math.random() * (99999 - 10000) + 10000);
       let insert = await sqlStatement(`INSERT INTO Company (Company_Name,Company_Address,Company_Invite_Code) VALUES ("${req.body.Company_Name}","${req.body.Company_Address}",${randomCode})`);
       let getCompanyID = await sqlStatement(`SELECT * FROM Company WHERE Company_Name = "${req.body.Company_Name}"`);
-      let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Complete" where idUser="${req.session.userID}"`)
+      let addRelationship = await sqlStatement(`INSERT INTO User_To_Company (idUser,Company_Id,Application_Status) VALUES (${req.session.userID},${getCompanyID[0].CompanyID},"Complete")`);
+      //let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Complete" where idUser="${req.session.userID}"`)
       res.redirect("/mysponsor");
       return;
     return;
@@ -229,7 +234,8 @@ app.post('/join-company', async(req, res) => {
       //Find's the company ID associated with the join code
       //updates calling user's company ID and application_Status to Pending
       let getCompanyID = await sqlStatement(`SELECT * FROM Company WHERE Company_Invite_Code = "${req.body.Company_Invite_Code}"`);
-      let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Pending" where idUser="${req.session.userID}"`)
+      let addRelationship = await sqlStatement(`INSERT INTO User_To_Company (idUser,Company_Id,Application_Status) VALUES (${req.session.userID},${getCompanyID[0].CompanyID},"Pending")`);
+      //let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Pending" where idUser="${req.session.userID}"`)
       res.redirect("/mysponsor");
       return;
     return;
@@ -243,11 +249,22 @@ app.post('/updateApplication', async(req, res) => {
       //updates calling user's company ID and application_Status to Pending
 
       if(req.body.decision == "Accept"){
-        let updateUser = await sqlStatement(`UPDATE User SET Application_Status="Complete" where idUser="${req.body.userID}"`)
+        let updateUser = await sqlStatement(`UPDATE User_To_Company SET Application_Status="Complete" where idUser="${req.body.userID}"`)
       }else{
-        let updateUser = await sqlStatement(`UPDATE User SET Application_Status=NULL,Company_Id=NULL where idUser="${req.body.userID}"`)
+        let updateUser = await sqlStatement(`DELETE FROM User_To_Company where idUser="${req.body.userID}"`)
       }
       res.redirect("/viewApplications");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
+app.post('/changeActiveCompany', async(req, res) => {
+  try {  
+    req.session.companyID = req.body.company;
+    res.redirect('back');
       return;
     return;
   }catch (e) {
@@ -258,7 +275,10 @@ app.post('/updatePointExchange', async(req, res) => {
   try {  
       //Find's the company ID associated with the join code
       //updates calling user's company ID and application_Status to Pending
-        let updatePoints = await sqlStatement(`UPDATE Company SET Points_To_Dollar=${req.body.Points_to_Dollar} where CompanyID="${req.body.companyID}"`)
+        let relationshipSQL = sqlStatement(`SELECT * FROM User_To_Company WHERE idUser="${req.session.userID}"`).then((companyID) =>{
+          let updatePoints = sqlStatement(`UPDATE Company SET Points_To_Dollar=${req.body.Points_to_Dollar} where CompanyID="${companyID[0].Company_Id}"`)
+        })
+        
      
       res.redirect("/editCatalog");
       return;
@@ -331,32 +351,41 @@ app.get('*', function(req, res, next){
   }
 });
 app.get('/mysponsor', function(req, res){
+  console.log(req.session.companyID);
   sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
     let sql1 = value;
-    if(value[0].Company_Id){
-      sqlStatement(`SELECT * from Company WHERE CompanyID = ${sql1[0].Company_Id}`).then((value) => {
-        res.render('mysponsor.ejs',{
+    
+      sqlStatement(`SELECT * from User_To_Company WHERE idUser = ${req.session.userID}`).then((User_To_Company) =>{
+        if(User_To_Company[0]){
+        sqlStatement(`SELECT * from Company WHERE CompanyID = ${User_To_Company[0].Company_Id}`).then((value) => {
+          res.render('mysponsor.ejs',{
             username: req.session.username,
             userID: req.session.userID,
             sqlObj: sql1,
-            companySQL : value
+            companySQL : value,
+            User_To_Company: User_To_Company,
+            companySession: req.session.companyID
+          });
         });
+      }else{
+        res.render('mysponsor.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          sqlObj: sql1,
+          User_To_Company: null
       });
-    }else{
-      res.render('mysponsor.ejs',{
-        username: req.session.username,
-        userID: req.session.userID,
-        sqlObj: sql1
-    });
-    }
+      }
+      });
+    
   });
 });
 
 app.get('/editCatalog', function(req, res){
   sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+    sqlStatement(`SELECT * from User_To_Company WHERE idUser = ${req.session.userID}`).then((companyID) => {
     let sql1 = value;
-    if(value[0].Company_Id){
-      sqlStatement(`SELECT * from Company WHERE CompanyID = ${sql1[0].Company_Id}`).then((value) => {
+    if(companyID){
+      sqlStatement(`SELECT * from Company WHERE CompanyID = ${companyID[0].Company_Id}`).then((value) => {
         res.render('editcatalog.ejs',{
             username: req.session.username,
             userID: req.session.userID,
@@ -369,16 +398,28 @@ app.get('/editCatalog', function(req, res){
     }
   });
 });
+});
 app.get('/viewApplications', function(req, res){
-  sqlStatement(`SELECT * from User WHERE idUser = ${req.session.userID}`).then((value) => {
+  sqlStatement(`SELECT * from User_To_Company WHERE idUser = ${req.session.userID}`).then((value) => {
     let sql1 = value;
     if(value[0].Company_Id){
-      sqlStatement(`SELECT * from User WHERE Company_Id = ${sql1[0].Company_Id} AND Application_Status = "Pending"`).then((value) => {
-        res.render('viewapplications.ejs',{
+      sqlStatement(`SELECT * from User_To_Company WHERE Company_Id = ${sql1[0].Company_Id} AND Application_Status = "Pending"`).then((value) => {
+        let promiseArray = [];
+        for(let i = 0; i < value.length; i++){
+          let tempPromise = sqlStatement(`SELECT * from User WHERE idUser = ${value[i].idUser}`).then((value) => {
+            return value[0];
+          });
+          promiseArray.push(tempPromise);
+        }
+        Promise.all(promiseArray).then((array) =>{
+          //array is empty for some reason
+          console.log(array);
+          res.render('viewapplications.ejs',{
             username: req.session.username,
             userID: req.session.userID,
             sqlObj: sql1,
-            pendingApplication : value
+            pendingApplication : array
+          });
         });
       });
     }else{
@@ -410,7 +451,7 @@ app.get('/cart', function(req, res){
       getCartInfo(req).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
-              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+              sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
                 if(data){
                   for(let i = 0; i < data.length; i++){
                     data[i].Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data[i].Item.ConvertedCurrentPrice.Value).toFixed(2);
@@ -478,9 +519,9 @@ function driverPage(req, res){
           itemFilter:'ListingType:FixedPrice, HideDuplicateItems:1'
       }).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
-            sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+            sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
             if(userObj[0].Application_Status == "Complete"){
-              sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+              sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
               
                 
                 for(let i = 0; i < data[0].searchResult[0].item.length; i++){
@@ -509,7 +550,7 @@ function driverPage(req, res){
             // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
           }
           });
-          });
+        });
         });
 }
 app.get('/product', function(req, res){
@@ -517,7 +558,7 @@ app.get('/product', function(req, res){
       ebay.getSingleItem(productID).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
-              sqlStatement(`select Point_Balance from User where idUser = "${req.session.userID}"`).then((value) => {
+              sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
                 data.Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data.Item.ConvertedCurrentPrice.Value).toFixed(2);
                 res.render("productpage.ejs",{
                   username: req.session.username,
