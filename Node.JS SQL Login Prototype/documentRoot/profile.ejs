@@ -73,37 +73,15 @@
                 <a href="/mysponsor" style="float:right;">My Sponsor</a>
                 <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
                 <a href="/reports" style="float:right;">Reports</a>
-
             </div>
             
           </div>
           <br><br>
         </center>
-        <form action="/generateReport" method="POST">
-            <input name="reportType" type="hidden" value="month">
-            <input type="submit" value="Generate Report by Month" name="decision"><br>
-        </form>
-        <%
-        if(report){
-            for(let i = 0; i < report.length; i++)
-                {%>
-                    <%if(i == report.length - 1){%>
-                    <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
-                        <%}else{%>
-                            <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
-                            <%}%>
-                    <div style="display: inline-block;">
-                    <p style = "color:#828282;font-style:italic;">PurchaseID <%=report[i].PurchaseID%></p>
-                    <p style = "color:#828282;font-style:italic;">User ID <%=report[i].UserID%></p>
-                    <p style = "color:#828282;font-style:italic;">Time Purchased <%=report[i].Time_Purchased%></p>
-                    <p style = "color:#828282;font-style:italic;">Amount <%=report[i].Amount%></p>
-                    <p style = "color:#828282;font-style:italic;">Company <%=report[i].company%></p>
-                    <p style = "color:#828282;font-style:italic;">Username <%=report[i].UserName%></p>
-                </div>
-            <%}
-        }
-        %>
-    </center>
-</body>
+        <center>
+            <img src="blank.png" alt="blank profile" width="500" height="600">
+
+        </center>
+    </body>
 </html>
 
