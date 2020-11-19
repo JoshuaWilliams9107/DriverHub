@@ -131,6 +131,32 @@ app.post('/submit-form-signup', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/submit-form-signup-admin', async(req, res) => {
+  try {  
+    let username = req.body.create_username;
+    username = username.toLowerCase();
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
+    let numberOfExistingUsers = await sqlStatement(`SELECT * FROM User where Username= "${username}"`);
+    if(numberOfExistingUsers.length > 0){
+      let login = encodeURIComponent("true");
+      res.redirect("/signupAdmin?userExists=" + login)
+      return;
+    }
+    let sql = `INSERT INTO User (Email,First_Name,Last_Name,Username,Password,User_Type,Birth_Date) VALUES (
+    \"${req.body.email}\",\"${req.body.first_name}\",\"${req.body.last_name}\",
+    \"${username}\",\"${password}\",\"${req.body.accountType.charAt(0).toUpperCase() + req.body.accountType.slice(1)}\",\"${req.body.birthday}\")`;
+
+    con.query(sql, function (err, result) {
+    if (err){
+      throw err;
+    }else{
+      res.redirect("/home");
+    }
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 app.post('/submit-form-signup-driver-for-sponsor', async(req, res) => {
   try {  
     let username = req.body.create_username;
@@ -493,7 +519,20 @@ app.get('/mysponsor', function(req, res){
     
   });
 });
-
+app.get('/addPointsAdmin', function(req, res){
+  sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
+    res.render('admindriverpoint.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      drivers: value
+    });
+  });
+})
+app.get('/signupAdmin', function(req, res){
+  res.render('signupadmin.ejs',{
+    userExists: req.query.userExists
+  });
+})
 app.get('/signupDriver', function(req, res){
   res.render('signupdriverforcompany.ejs',{
     userExists: req.query.userExists
@@ -625,13 +664,12 @@ async function getCartInfo(req){
   return ebayObjArray;
 }
 function adminPage(req,res){
-  sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
+  
     res.render('adminpage.ejs',{
       username: req.session.username,
       userID: req.session.userID,
-      drivers: value
     });
-  });
+
   //let driversobject=getDrivers();
   //res.render('adminpage.ejs',{
   //  username: req.session.username,
@@ -725,6 +763,12 @@ app.get('/product', function(req, res){
           });
   });
 });
+app.get('/profile', function(req,res){
+  res.render('profile.ejs',{
+    username: req.session.username,
+    userID: req.session.userID,
+  });
+})
 function sponsorPage(req,res){
   sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
     res.render('sponsorpage.ejs',{
