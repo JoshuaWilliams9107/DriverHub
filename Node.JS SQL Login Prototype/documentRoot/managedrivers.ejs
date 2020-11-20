@@ -2,6 +2,8 @@
 <html>
     <head>
         <style>
+            :link { color: #0000EE; }
+            :visited { color: #0000EE; }
             body {
                 margin: 0;
                 font-family: Arial;
@@ -52,18 +54,17 @@
                 font-size: 17px;
                 vertical-align: middle;
             }
-        </style>
-        <script>
-            function displayCreateCompany(){
-
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
             }
-        </script>
+        </style>
     </head>
     <body>
         <div id="topnav">
             <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
             
-            <a href="/home"  style="float:left;">Home</a>
+            <a href="/home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
                 
@@ -71,20 +72,29 @@
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="/cart" style="float:right;">Cart</a>
-                <a href="/mysponsor" class="active" style="float:right;">My Sponsor</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
                 <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
-                
-            </div>
+                <a href="/reports" style="float:right;">Reports</a>
 
+            </div>
+            
           </div>
           <br><br>
         </center>
         <center>
-            <p>Please type in your company's join code to submit an application.</p>
-            <form action="/join-company" method="POST">
-                <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
-                <input type="submit" value="Join Company"> <br>
-            </form>
+            
+                
+            <%for(let i = 0; i < drivers.length; i++){%>
+                <form action="/manageProfile">
+                    <input type="hidden" name="Username" value="<%=drivers[i].Username%>"/>
+                    <input type="submit" value="<%=drivers[i].Username%>" /><br>
+                </form>
+                    
+            <%}%>
+                
+
+
         </center>
     </body>
 </html>
+

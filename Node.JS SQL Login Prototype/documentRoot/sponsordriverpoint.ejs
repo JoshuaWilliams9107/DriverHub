@@ -52,18 +52,17 @@
                 font-size: 17px;
                 vertical-align: middle;
             }
-        </style>
-        <script>
-            function displayCreateCompany(){
-
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
             }
-        </script>
+        </style>
     </head>
     <body>
         <div id="topnav">
             <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
             
-            <a href="/home"  style="float:left;">Home</a>
+            <a href="/home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
                 
@@ -71,20 +70,40 @@
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="/cart" style="float:right;">Cart</a>
-                <a href="/mysponsor" class="active" style="float:right;">My Sponsor</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
                 <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
-                
-            </div>
+                <a href="/reports" style="float:right;">Reports</a>
 
+            </div>
+            
           </div>
           <br><br>
         </center>
         <center>
-            <p>Please type in your company's join code to submit an application.</p>
-            <form action="/join-company" method="POST">
-                <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
-                <input type="submit" value="Join Company"> <br>
-            </form>
+            <table style="margin-left: auto;margin-right: auto;">
+                <tr>
+                  <th>DriverName</th>
+                  <th>Points</th> 
+                  <th>Add Points</th>
+                </tr>
+                <%
+                for(let i = 0; i < drivers.length; i++){
+                    %><tr>
+                        <td><%=drivers[i].Username%></td>
+                        <td><%=Driver_To_Company[i].Point_Balance%></td>
+                        <td><form method = "POST" action="/submit-form-addpoints">
+                            <label for="pointsToAdd">Points to add:</label>
+                            <input type="text" name="pointsToAdd">
+                            <input type="hidden" name="driverID" value= <%=Driver_To_Company[i].idUser%> >
+                            <input type="hidden" name="companyID" value= <%=Driver_To_Company[i].Company_Id%> >
+                            <input type="submit" value="Submit">
+                          </form></td>
+                    </tr><%
+                }
+                %>
+            </table> 
+
         </center>
     </body>
 </html>
+

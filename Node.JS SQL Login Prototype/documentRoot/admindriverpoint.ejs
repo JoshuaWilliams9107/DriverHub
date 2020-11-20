@@ -52,6 +52,10 @@
                 font-size: 17px;
                 vertical-align: middle;
             }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
         </style>
     </head>
     <body>
@@ -61,11 +65,7 @@
             <a href="/home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
-                <form style="display: inline;overflow:hidden;">
-                    <input type="text"placeholder="search" style="width:500px;display: inline;padding: 7px;font-size: 17px;vertical-align: middle;"/>
-                    <button id="search">Search</button>
-                    
-                </form>
+                
             </div>
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
@@ -80,9 +80,10 @@
           <br><br>
         </center>
         <center>
-            <table style="width:100%">
+            <table style="margin-left: auto;margin-right: auto;">
                 <tr>
                   <th>DriverName</th>
+                  <th>Sponsor Name</th>
                   <th>Points</th> 
                   <th>Add Points</th>
                 </tr>
@@ -90,11 +91,14 @@
                 for(let i = 0; i < drivers.length; i++){
                     %><tr>
                         <td><%=drivers[i].Username%></td>
-                        <td><%=drivers[i].Point_Balance%></td>
+                        
+                        <td><%=CompanyArr[i].Company_Name%></td>
+                        <td><%=Driver_To_Company[i].Point_Balance%></td>
                         <td><form method = "POST" action="/submit-form-addpoints">
                             <label for="pointsToAdd">Points to add:</label>
                             <input type="text" name="pointsToAdd">
-                            <input type="hidden" name="driverID" value= <%=drivers[i].idUser%> >
+                            <input type="hidden" name="driverID" value= <%=Driver_To_Company[i].idUser%> >
+                            <input type="hidden" name="companyID" value= <%=Driver_To_Company[i].Company_Id%> >
                             <input type="submit" value="Submit">
                           </form></td>
                     </tr><%

@@ -61,11 +61,6 @@
             <a href="/home" class="active" style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
-                <form style="display: inline;overflow:hidden;">
-                    <input type="text"placeholder="search" style="width:500px;display: inline;padding: 7px;font-size: 17px;vertical-align: middle;"/>
-                    <button id="search">Search</button>
-                    
-                </form>
             </div>
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
@@ -79,34 +74,11 @@
           </div>
           <br><br>
         </center>
-        <center><h1>[Insert Catalog API Here]</h1></center>
         <center>
-        <p>You are a sponsor.</p>
-
-        <p>Your username is <%=username%></p>
-        <p>Your userID is <%=userID%></p>
-
-        <table style="width:100%">
-            <tr>
-              <th>DriverName</th>
-              <th>Points</th> 
-              <th>Add Points</th>
-            </tr>
-            <%
-            for(let i = 0; i < drivers.length; i++){
-                %><tr>
-                    <td><%=drivers[i].Username%></td>
-                    <td><%=drivers[i].Point_Balance%></td>
-                    <td><form method = "POST" action="/submit-form-addpoints">
-                        <label for="pointsToAdd">Points to add:</label>
-                        <input type="text" name="pointsToAdd">
-                        <input type="hidden" name="driverID" value= <%=drivers[i].idUser%> >
-                        <input type="submit" value="Submit">
-                      </form></td>
-                </tr><%
-            }
-            %>
-        </table>
+        <form action="/addPointsSponsor">
+            <input type="submit" value="Add/Remove Driver Points" /><br>
+        </form>
+        
          
         </center>
     </body>
