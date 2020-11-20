@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial;
+            }
+           #topnav {
+                
+                overflow: hidden;
+                background-color: #333;
+            }
+
+            #topnav a {
+                color: #f2f2f2;
+                text-align: center;
+                padding: 21px 16px;
+                text-decoration: none;
+                font-size: 17px;
+
+            }
+
+            #topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            #topnav a.active {
+                background-color:#5eadff;
+                color:black;
+                font-weight:bold;
+                
+            }
+            .floatright{
+                float:right;
+            }
+            .floatleft{
+                float:left;
+            }
+            #search{
+                font-family: 'Arial';
+                background-color: #5eadb0; /* Green */
+                border: 0;
+                color: white;
+                height:37px;
+                width:72px;
+                text-align: left;
+                font-weight: bold;
+                display: inline;
+                padding: 7px;
+                font-size: 17px;
+                vertical-align: middle;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="topnav">
+            <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
+            
+            <a href="/home" class="active" style="float:left;">Home</a>
+            <p style="float:right;" style="padding-right: 100px;"></p>
+            <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
+                <form style="display: inline;overflow:hidden;">
+                    <input type="text"placeholder="search" style="width:500px;display: inline;padding: 7px;font-size: 17px;vertical-align: middle;"/>
+                    <button id="search">Search</button>
+                    
+                </form>
+            </div>
+            <div style="padding-right:100px">
+                <a href="/logout" style="float:right;">Logout</a>
+                <a href="/cart" style="float:right;">Cart</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
+                <a href="/purchases" style="float:right;">Purchases</a>
+
+            </div>
+            
+          </div>
+          <br><br>
+        </center>
+        <form action="/generateReport" method="POST">
+            <input name="reportType" type="hidden" value="month">
+            <input type="submit" value="Generate Report by Month" name="decision"><br>
+        </form>
+        <%
+         for(let i = 0; i < report.length; i++)
+            {%>
+                <%if(i == report.length - 1){%>
+                <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                    <%}else{%>
+                        <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                        <%}%>
+                <div style="display: inline-block;">
+                <p style = "color:#828282;font-style:italic;">PurchaseID <%=report[i].PurchaseID%></p>
+                <p style = "color:#828282;font-style:italic;">User ID <%=report[i].UserID%></p>
+                <p style = "color:#828282;font-style:italic;">Time Purchased <%=report[i].Time_Purchased%></p>
+                <p style = "color:#828282;font-style:italic;">Amount <%=report[i].Amount%></p>
+                <p style = "color:#828282;font-style:italic;">Company <%=report[i].company%></p>
+                <p style = "color:#828282;font-style:italic;">Username <%=report[i].UserName%></p>
+                </div>
+            <%}
+        %>
+    </center>
+</body>
+</html>
+
