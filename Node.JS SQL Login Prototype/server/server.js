@@ -724,6 +724,17 @@ app.get('/manageDrivers', function(req, res){
     });
 });
 })
+app.get('/manageUsers', function(req, res){
+  sqlStatement(`SELECT * from User`).then((value)=>{
+        //array is empty for some reason
+        res.render('manageusers.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          drivers: value
+        });
+    });
+});
+
 app.get('/signupAdmin', function(req, res){
   res.render('signupadmin.ejs',{
     userExists: req.query.userExists
@@ -731,11 +742,11 @@ app.get('/signupAdmin', function(req, res){
 })
 app.get('/manageProfile', function(req, res){
   sqlStatement(`select * from User where Username = "${req.query.Username}"`).then((value) => {
-    console.log(value);
       res.render('manageprofile.ejs',{
         username: req.session.username,
         userID: req.session.userID,
-        userObj: value
+        userObj: value,
+        userType: req.session.userType
       });
     });
 })
@@ -856,8 +867,22 @@ app.get('/editAccountS', function(req, res){
       userExists: req.query.userExists
     });
   });
-})
-
+});
+app.post('/deleteAccount', async(req, res) => {
+  
+  if(req.session.userType == "Admin"){
+    let waitDelete = await sqlStatement(`DELETE FROM User where idUser="${req.body.userID}"`);
+    let waitDelet2 = await sqlStatement(`DELETE FROM User_To_Company where idUser="${req.body.userID}"`);
+    res.redirect('/manageUsers');
+  }else{
+    console.log(req.body.userID);
+    console.log(req.session.companyID);
+    let waitDelete = await sqlStatement(`SELECT * FROM User_To_Company where idUser="${req.body.userID}" and Company_Id="${req.session.companyID}"`);
+    let waitDelete2 = await sqlStatement(`DELETE FROM User_To_Company where id="${waitDelete[0].Id}"`);
+    res.redirect('/manageDrivers');
+  }
+  
+});
 app.post('/generateReport', async(req, res) => {
   let report_Type = req.body.reportType;
   console.log("report type is: " + report_Type);
