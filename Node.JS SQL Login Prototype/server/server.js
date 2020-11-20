@@ -18,6 +18,7 @@ con.connect(function(err) {
 const { makeRequest } = require('./node_modules/ebay-node-api/src/request');
 const express = require('express')
 var request = require("request")
+
 const app = express()
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());
@@ -47,6 +48,7 @@ let ebay = new EBay({
 
 //email:driverhubautomated@gmail.com
 //password:0qtRH4h2D9bA
+app.use('/img',express.static(__dirname + '/img'))
 app.use(session({
   resave: true,
   rolling: true,
@@ -187,21 +189,11 @@ app.post('/submit-form-addpoints', async(req, res) => {
     
   var d = new Date();
   var n = d.getTime();
-  let sql = `INSERT INTO Transaction_history (userid, Time_Purchased, Amount) VALUES (\"${userID}\",\"${n}\",\"${points}\")`
-  con.query(sql, function (err, result) {
-    if(err){
-      throw err;
-    }
+  let insettransaction = sqlStatement(`INSERT INTO Transaction_history (userid, Time_Purchased, Amount) VALUES (\"${userID}\",\"${n}\",\"${points}\")`);
+  let updateDriverPoint = sqlStatement(`UPDATE User_To_Company SET Point_Balance = Point_Balance + ${points} where idUser ="${userID}" and Company_Id="${req.body.companyID}"`).then((value) =>{
+    res.redirect('back');
   });
-
-
-    con.query(sql, function (err, result) {
-    if (err){
-      throw err;
-    }else{
-      res.redirect("http://52.87.231.160/home")
-    }
-    });
+ 
   }catch (e) {
     res.end(e.message || e.toString());
   }
@@ -452,6 +444,101 @@ app.post('/removeFromCart', async(req, res) => {
   }
 })
 
+app.post('/edit-profile', async(req, res) => {
+  //Need to do some validation here
+  sqlStatement(`UPDATE User SET First_Name="${req.body.First_Name}",Last_Name="${req.body.Last_Name}",Birth_Date="${req.body.Birth_Date}" where Username="${req.body.Username}"`).then((value) =>{
+    console.log(req.body.Username);
+    console.log(req.session.username);
+    if(req.body.Username.toLowerCase() != req.session.username.toLowerCase()){
+      res.redirect(`/manageProfile?Username=${req.body.Username}`);
+    }else{
+      res.redirect(`/profile`);
+    }
+  });
+})
+
+
+app.post('/editUsername', async(req, res) => {
+  //Need to do validation with session
+  try {  
+    let username = req.body.create_username;
+    username = username.toLowerCase();
+    let numberOfExistingUsers = await sqlStatement(`SELECT * FROM User where Username= "${username}"`);
+    if(numberOfExistingUsers.length > 0){
+      let login = encodeURIComponent("true");
+      if(req.body.userID != req.session.userID){
+        res.redirect(`/editAccountS?userExists=${login}&Username=${req.body.oUsername}`);
+      }else{
+        res.redirect(`/editAccount?userExists=${login}`);
+      }
+      
+      return;
+    }
+    if(req.session.userID == req.body.userID){
+      req.session.username = username;
+    }
+    sqlStatement(`UPDATE User SET Username="${username}" where idUser="${req.body.userID}"`).then((value) =>{
+      if(req.body.userID != req.session.userID){
+        res.redirect(`/editAccountS?&Username=${username}`);
+      }else{
+        res.redirect(`/editAccount`);
+      }
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/editEmail', async(req, res) => {
+  //Need to do validation with session
+  try {  
+    sqlStatement(`UPDATE User SET Email="${req.body.email}" where idUser="${req.body.userID}"`).then((value) =>{
+      if(req.body.userID != req.session.userID){
+        res.redirect(`/editAccountS?Username=${req.body.oUsername}`);
+      }else{
+        res.redirect(`/editAccount`);
+      }
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/editCompanyName', async(req, res) => {
+  try {  
+    sqlStatement(`UPDATE Company SET Company_Name="${req.body.Company_Name}" where CompanyID="${req.session.companyID}"`).then((value) =>{
+      res.redirect('/editCompany');
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/editCompanyAddress', async(req, res) => {
+  try {  
+    sqlStatement(`UPDATE Company SET Company_Address="${req.body.Company_Address}" where CompanyID="${req.session.companyID}"`).then((value) =>{
+      res.redirect('/editCompany');
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/editPassword', async(req, res) => {
+  //Need to do validation with session
+  try {  
+    let password = crypto.createHash('md5').update(req.body.create_password).digest('hex');
+    sqlStatement(`UPDATE User SET Password="${password}" where idUser="${req.body.userID}"`).then((value) =>{
+      if(req.body.userID != req.session.userID){
+        res.redirect(`/editAccountS?Username=${req.body.oUsername}`);
+      }else{
+        res.redirect(`/editAccount`);
+      }
+    });
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
+
+
+
 app.get('/login', function(req, res){
     res.render('index.ejs',{
       test: req.query.failedLogin
@@ -519,19 +606,138 @@ app.get('/mysponsor', function(req, res){
     
   });
 });
+app.get('/editCompany', function(req, res){
+  console.log(req.session.companyID);
+      sqlStatement(`SELECT * from Company WHERE CompanyID = ${req.session.companyID}`).then((value) => {
+          res.render('editcompany.ejs',{
+            username: req.session.username,
+            userID: req.session.userID,
+            companySQL : value,
+          });
+        });
+});
+
 app.get('/addPointsAdmin', function(req, res){
-  sqlStatement(`select * from User where User_Type = "Driver"`).then((value) => {
-    res.render('admindriverpoint.ejs',{
-      username: req.session.username,
-      userID: req.session.userID,
-      drivers: value
+  sqlStatement(`SELECT * from User_To_Company`).then((value)=>{
+    let promiseArray = [];
+    for(let i = 0; i < value.length; i++){
+      let tempPromise = sqlStatement(`SELECT * from User WHERE idUser = ${value[i].idUser}`).then((value) => {
+        if(value[0].User_Type == "Driver"){
+          return value[0];
+        }else{
+          return null;
+        }
+        
+      });
+      promiseArray.push(tempPromise);
+    }
+    let promiseArray2 = [];
+    for(let i = 0; i < value.length; i++){
+      let tempPromise = sqlStatement(`SELECT * from Company WHERE CompanyID = ${value[i].Company_Id}`).then((value) => {
+          return value[0];
+      });
+      promiseArray2.push(tempPromise);
+    }
+    Promise.all(promiseArray).then((array) =>{
+      Promise.all(promiseArray2).then((array2) =>{
+        for(let i = 0; i < array.length; i++){
+          if(array[i] == null){
+            array.splice(i,1);
+            value.splice(i,1);
+            array2.splice(i,1);
+          }
+        }
+        //array is empty for some reason
+        console.log(value);
+        res.render('admindriverpoint.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          drivers: array,
+          Driver_To_Company: value,
+          CompanyArr: array2
+        });
+      });
     });
-  });
+});
+})
+app.get('/addPointsSponsor', function(req, res){
+  sqlStatement(`SELECT * from User_To_Company where Company_Id = "${req.session.companyID}"`).then((value)=>{
+    let promiseArray = [];
+    for(let i = 0; i < value.length; i++){
+      let tempPromise = sqlStatement(`SELECT * from User WHERE idUser = ${value[i].idUser}`).then((value) => {
+        if(value[0].User_Type == "Driver"){
+          return value[0];
+        }else{
+          return null;
+        }
+        
+      });
+      promiseArray.push(tempPromise);
+    }
+    Promise.all(promiseArray).then((array) =>{
+        for(let i = 0; i < array.length; i++){
+          if(array[i] == null){
+            array.splice(i,1);
+            value.splice(i,1);
+          }
+        }
+        //array is empty for some reason
+        console.log(value);
+        res.render('sponsordriverpoint.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          drivers: array,
+          Driver_To_Company: value,
+        });
+    });
+});
+})
+app.get('/manageDrivers', function(req, res){
+  sqlStatement(`SELECT * from User_To_Company where Company_Id = "${req.session.companyID}"`).then((value)=>{
+    let promiseArray = [];
+    for(let i = 0; i < value.length; i++){
+      let tempPromise = sqlStatement(`SELECT * from User WHERE idUser = ${value[i].idUser}`).then((value) => {
+        if(value[0].User_Type == "Driver"){
+          return value[0];
+        }else{
+          return null;
+        }
+        
+      });
+      promiseArray.push(tempPromise);
+    }
+    Promise.all(promiseArray).then((array) =>{
+        for(let i = 0; i < array.length; i++){
+          if(array[i] == null){
+            array.splice(i,1);
+            value.splice(i,1);
+          }
+        }
+        //array is empty for some reason
+        console.log(value);
+        res.render('managedrivers.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          drivers: array,
+          Driver_To_Company: value,
+        });
+    });
+});
 })
 app.get('/signupAdmin', function(req, res){
   res.render('signupadmin.ejs',{
     userExists: req.query.userExists
   });
+})
+app.get('/manageProfile', function(req, res){
+  sqlStatement(`select * from User where Username = "${req.query.Username}"`).then((value) => {
+    console.log(value);
+      res.render('manageprofile.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        userObj: value
+      });
+    });
 })
 app.get('/signupDriver', function(req, res){
   res.render('signupdriverforcompany.ejs',{
@@ -613,6 +819,45 @@ app.get('/reports', function(req, res){
   });
  
 })
+app.get('/editProfile', function(req, res){
+  sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
+    res.render('editprofile.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      userObj: value
+    });
+  });
+})
+app.get('/editProfileS', function(req, res){
+  sqlStatement(`select * from User where Username = "${req.query.Username}"`).then((value) => {
+    res.render('editprofile.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      userObj: value
+    });
+  });
+})
+app.get('/editAccount', function(req, res){
+  sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
+    res.render('editaccount.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      userObj: value,
+      userExists: req.query.userExists
+    });
+  });
+})
+app.get('/editAccountS', function(req, res){
+  sqlStatement(`select * from User where Username = "${req.query.Username}"`).then((value) => {
+    res.render('editaccount.ejs',{
+      username: req.session.username,
+      userID: req.session.userID,
+      userObj: value,
+      userExists: req.query.userExists
+    });
+  });
+})
+
 app.post('/generateReport', async(req, res) => {
   let report_Type = req.body.reportType;
   console.log("report type is: " + report_Type);
@@ -764,9 +1009,12 @@ app.get('/product', function(req, res){
   });
 });
 app.get('/profile', function(req,res){
+  sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
   res.render('profile.ejs',{
     username: req.session.username,
     userID: req.session.userID,
+    userObj: value
+  });
   });
 })
 function sponsorPage(req,res){

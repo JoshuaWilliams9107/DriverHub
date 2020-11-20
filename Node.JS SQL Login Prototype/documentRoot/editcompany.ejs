@@ -80,11 +80,18 @@
           <br><br>
         </center>
         <center>
-            <p>Please type in your company's join code to submit an application.</p>
-            <form action="/join-company" method="POST">
-                <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
-                <input type="submit" value="Join Company"> <br>
+            <p>Please type in your company's information</p>
+            <form action="/editCompanyName" method="POST">
+                <input type="text" placeholder="Company Name" name="Company_Name" value="<%=companySQL[0].Company_Name%>"><br>
+                <input type="submit" value="Update Name"> <br>
             </form>
+            <form action="/editCompanyAddress" method="POST">
+                <input type="text" placeholder="Company Address" name="Company_Address" value="<%=companySQL[0].Company_Address%>"><br>
+                <input type="submit" value="Update Address"> <br>
+            </form>
+                
+                
+            
         </center>
     </body>
 </html>

@@ -52,12 +52,8 @@
                 font-size: 17px;
                 vertical-align: middle;
             }
+            
         </style>
-        <script>
-            function displayCreateCompany(){
-
-            }
-        </script>
     </head>
     <body>
         <div id="topnav">
@@ -66,25 +62,39 @@
             <a href="/home"  style="float:left;">Home</a>
             <p style="float:right;" style="padding-right: 100px;"></p>
             <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
-                
+                <form style="display: inline;overflow:hidden;">
+
+                    
+                </form>
             </div>
             <div style="padding-right:100px">
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="/cart" style="float:right;">Cart</a>
-                <a href="/mysponsor" class="active" style="float:right;">My Sponsor</a>
-                <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
-                
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <a href="/profile" class="active" style="float:right;">My Profile (<%=username%>)</a>
             </div>
-
+            
           </div>
           <br><br>
         </center>
-        <center>
-            <p>Please type in your company's join code to submit an application.</p>
-            <form action="/join-company" method="POST">
-                <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
-                <input type="submit" value="Join Company"> <br>
+        <div style="padding-left:300px;">
+            <img src="/img/blank.png" alt="blank profile" width="200" height="200" style="float:left;">
+            <div style="display:inline-block;margin-left:20px;">
+            <p style="font-size:20px;"><%=userObj[0].First_Name%> <%=userObj[0].Last_Name%> </p>
+            <p style="font-size:20px;">User Type: <%=userObj[0].User_Type%></p>
+            <p style="font-size:20px;">Date of birth: <%=userObj[0].Birth_Date%></p>
+            <form action="/editProfileS" style="display:inline-block;">
+                <input type="hidden" value="<%=userObj[0].Username%>" name="Username"/>
+                <input type="submit" value="Edit Profile" /><br>
             </form>
-        </center>
+            <br>
+            <form action="/editAccountS" style="display:inline-block;margin-top:10px">
+                <input type="hidden" value="<%=userObj[0].Username%>" name="Username"/>
+                <input type="submit" value="Edit Account Settings" /><br>
+            </form>
+            </div>
+        </div>
+
     </body>
 </html>
+
