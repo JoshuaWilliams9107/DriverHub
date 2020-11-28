@@ -183,7 +183,7 @@
                     <span style="width:200px;height:200px;">
                         <img style="width:inherit;vertical-align:middle;border-style: solid;border-width:1px;border-top-width:0px;border-bottom-width:0px;border-left:2px;border-color:#eaeaea;" src = "https://secureir.ebaystatic.com/pictures/aw/pics/stockimage1.jpg">
                         <div style="display: inline-block;">
-                            <a href = "/product?id=<%=  %>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
+                            <a href = "/product?id=<%=ebayObj[0].searchResult[0].item[i].itemId[0]%>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
                             <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
                             <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
                         </div>
