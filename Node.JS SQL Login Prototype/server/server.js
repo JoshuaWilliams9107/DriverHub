@@ -396,7 +396,17 @@ app.post('/updatePointExchange', async(req, res) => {
 app.post('/addToBlacklist', async(req, res) => {
   try {  
         console.log(`Removed ${req.body.itemID}`)
-        let blacklist = await sqlStatement(`INSERT INTO Item_BlackList (itemID,CompanyID) VALUES (${req.body.itemID},${req.session.companyID})`);
+        let blacklist = await sqlStatement(`INSERT INTO Item_BlackList (itemID,CompanyID,itemTitle) VALUES (${req.body.itemID},${req.session.companyID},"${req.body.itemTitle}")`);
+        res.redirect('/home');
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+app.post('/removeFromBlacklist', async(req, res) => {
+  try {  
+        let blacklist = await sqlStatement(`DELETE FROM Item_BlackList WHERE Item_Blacklist_ID=${req.body.blacklistID}`);
         res.redirect('back');
       return;
     return;
@@ -1050,27 +1060,31 @@ function driverPage(req, res){
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
             sqlStatement(`select * from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
             if(value[0].Application_Status == "Complete"){
-              sqlStatement(`SELECT * FROM Item_BlackList WHERE CompanyID=${req.session.companyID};`).then((blacklist) => {
+              sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
+                sqlStatement(`SELECT * FROM Item_BlackList WHERE CompanyID=${req.session.companyID};`).then((blacklist) => {
                 
-                for(let i = 0; i < data[0].searchResult[0].item.length; i++){
-                  data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
-                  for(let j = 0; j < blacklist.length; j++){
-                    if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
-                      data[0].searchResult[0].item.splice(i, 1);
+                  for(let i = 0; i < data[0].searchResult[0].item.length; i++){
+                    data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
+                    for(let j = 0; j < blacklist.length; j++){
+                      if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
+                        console.log("removed item");
+                        data[0].searchResult[0].item.splice(i, 1);
+                      }
                     }
+                    
                   }
-                }
-
-                res.render("sponsorpage.ejs",{
-                  username: req.session.username,
-                  userID: req.session.userID,
-                  userBalance: value[0].Point_Balance,
-                  ebayObj: data,
-                  companySQL: companyObj,
-                  userSQL: value});
-                // Data is in format of JSON
-                // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
-               });
+  
+                  res.render("sponsorpage.ejs",{
+                    username: req.session.username,
+                    userID: req.session.userID,
+                    userBalance: value[0].Point_Balance,
+                    ebayObj: data,
+                    companySQL: companyObj,
+                    userSQL: value});
+                  // Data is in format of JSON
+                  // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+                 });
+              });
             }else{
             res.render("driverpage.ejs",{
               username: req.session.username,
@@ -1107,6 +1121,15 @@ app.get('/product', function(req, res){
               });
             });
           });
+  });
+});
+app.get('/editBlackList', function(req,res){
+  sqlStatement(`SELECT * FROM Item_BlackList WHERE CompanyID=${req.session.companyID};`).then((blacklist) => {
+    res.render('editblacklist.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        blacklist: blacklist
+    })
   });
 });
 app.get('/profile', function(req,res){
@@ -1200,29 +1223,6 @@ app.get('/',function(req,res){
 //app.get('/', (req, res) => {
 //  res.send('Hello World!')
 //}
-
-app.post('/submit-form-notify', async(req, res) => {
-  try {  
-    req = true;
-    var mailOptions = {
-      from: 'driverhubautomated@gmail.com',
-      to: '<%=email>',
-      subject: 'Notifications',
-      text: `Successful Signup!`
-    };
-    transporter.sendMail(mailOptions, function(error, info){
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
-    res.redirect("/recoverycode");
-    return;
-  }catch (e) {
-    res.end(e.message || e.toString());
-  }
-})
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
