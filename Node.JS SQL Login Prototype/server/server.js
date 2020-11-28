@@ -181,6 +181,21 @@ app.post('/submit-form-signup-driver-for-sponsor', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/changeUserType', async(req, res) => {
+  try {  
+    if(req.body.usertype == "Sponsor"){
+      req.session.userType = "Sponsor";
+      res.redirect("/home");
+    }else if(req.body.usertype == "Driver"){
+      let changePointBalance = await sqlStatement(`UPDATE User_To_Company SET Point_Balance=100000 WHERE idUser=${req.session.userID}`)
+      req.session.userType = "Driver";
+      res.redirect("/home");
+    }
+    
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 
 app.post('/submit-form-addpoints', async(req, res) => {
   try {  
@@ -629,6 +644,7 @@ app.get('/mysponsor', function(req, res){
             username: req.session.username,
             userID: req.session.userID,
             sqlObj: sql1,
+            userType: req.session.userType,
             companySQL : value,
             User_To_Company: User_To_Company,
             companySession: req.session.companyID
@@ -639,6 +655,7 @@ app.get('/mysponsor', function(req, res){
           username: req.session.username,
           userID: req.session.userID,
           sqlObj: sql1,
+          userType: req.session.userType,
           User_To_Company: null
       });
       }
@@ -994,6 +1011,8 @@ app.get('/cart', function(req, res){
                 console.log(data);
                 res.render("cart.ejs",{
                   username: req.session.username,
+                  userType: req.session.userType,
+                  userObj:userObj,
                   userID: req.session.userID,
                   userBalance: value[0].Point_Balance,
                   ebayObj: data,
@@ -1073,9 +1092,11 @@ function driverPage(req, res){
                     }
                     
                   }
-  
+
                   res.render("sponsorpage.ejs",{
                     username: req.session.username,
+                    userObj:userObj[0],
+                    userType: req.session.userType,
                     userID: req.session.userID,
                     userBalance: value[0].Point_Balance,
                     ebayObj: data,
@@ -1086,8 +1107,10 @@ function driverPage(req, res){
                  });
               });
             }else{
-            res.render("driverpage.ejs",{
+            res.render("sponsorpage.ejs",{
               username: req.session.username,
+              userObj:userObj[0],
+              userType: req.session.userType,
               userID: req.session.userID,
               userBalance: value[0].Point_Balance,
               ebayObj: data,
@@ -1110,6 +1133,7 @@ app.get('/product', function(req, res){
                 data.Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data.Item.ConvertedCurrentPrice.Value).toFixed(2);
                 res.render("productpage.ejs",{
                   username: req.session.username,
+                  userType: req.session.userType,
                   userID: req.session.userID,
                   userObj: userObj,
                   userBalance: value[0].Point_Balance,
@@ -1136,6 +1160,7 @@ app.get('/profile', function(req,res){
   sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
     sqlStatement(`select * FROM User_To_Company WHERE idUser="${value.idUser}"`).then((sponsorInfo) =>{
       res.render('profile.ejs',{
+        userType: req.session.userType,
         username: req.session.username,
         userID: req.session.userID,
         userObj: value,
@@ -1184,6 +1209,8 @@ function sponsorPage(req,res){
 
                 res.render("sponsorpage.ejs",{
                   username: req.session.username,
+                  userType: req.session.userType,
+                  userObj:userObj[0],
                   userID: req.session.userID,
                   userBalance: value[0].Point_Balance,
                   ebayObj: data,
@@ -1196,6 +1223,8 @@ function sponsorPage(req,res){
             }else{
             res.render("driverpage.ejs",{
               username: req.session.username,
+              userObj:userObj[0],
+              userType: req.session.userType,
               userID: req.session.userID,
               userBalance: value[0].Point_Balance,
               ebayObj: data,

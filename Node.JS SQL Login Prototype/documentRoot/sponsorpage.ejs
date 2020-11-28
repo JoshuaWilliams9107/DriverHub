@@ -126,13 +126,27 @@
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="/cart" style="float:right;">Cart</a>
                 <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <%if(userType == "Driver"){%>
+                    <p style="color: white;float:left;">Point Balance: (<%=userBalance%>)</p>
+                    <%}%>
                 <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
+                <%if(userType == "Sponsor"){%>
                 <a href="/reports" style="float:right;">Reports</a>
+                <%}%>
             </div>
 
           </div>
           <br><br>
-
+          <%if(userObj.User_Type == "Sponsor"){%>
+            <p>currently viewing as a <%=userType%></p>
+          <form action="/changeUserType" method="POST">
+          <select id="cars" name="usertype">
+          <option value="Sponsor">Sponsor</option>
+          <option value="Driver">Driver</option>
+          </select>
+          <input type="submit" value="Change View"/>
+            </form>
+          <%}%>
             
             
         </center>
