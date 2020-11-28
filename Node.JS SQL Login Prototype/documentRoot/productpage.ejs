@@ -90,6 +90,9 @@
                 <a href="/logout" style="float:right;">Logout</a>
                 <a href="/cart" style="float:right;">Cart</a>
                 <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <%if(userType == "Driver"){%>
+                    <p style="color: white;float:left;">Point Balance: (<%=userBalance%>)</p>
+                <%}%>
                 <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
                 
             </div>
@@ -117,11 +120,13 @@
             <%for(let i = 0; i < ebayObj.Item.ItemSpecifics.NameValueList.length; i++){%>
             <p><%=ebayObj.Item.ItemSpecifics.NameValueList[i].Name%> : <%=ebayObj.Item.ItemSpecifics.NameValueList[i].Value[0]%></p>
             <%}%>
+            <%if(userType == "Driver"){%>
             <form action="/addToCart" method="POST">
                 <input name="itemID" type="hidden" value="<%=ebayObj.Item.ItemID%>">
                 <input type="submit" value="Add to Cart" name="decision"><br>
             </form>
-            <%if(userObj[0].User_Type == "Sponsor"){%>
+            <%}%>
+            <%if(userType == "Sponsor"){%>
                 <form action="/addToBlacklist" method="POST">
                     <input name="itemID" type="hidden" value="<%=productID%>">
                     <input name="itemTitle" type="hidden" value="<%=ebayObj.Item.Title%>">
