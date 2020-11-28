@@ -72,6 +72,9 @@
                 <a href="/cart" style="float:right;">Cart</a>
                 <a href="/mysponsor" style="float:right;">My Sponsor</a>
                 <a href="/profile" class="active" style="float:right;">My Profile (<%=username%>)</a>
+                <%if(userObj[0].User_Type == "Sponsor"){%>
+                    <a href="/reports" style="float:right;">Reports</a>
+                <%}%>
             </div>
             
           </div>
