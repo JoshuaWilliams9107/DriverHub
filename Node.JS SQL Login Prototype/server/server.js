@@ -335,6 +335,20 @@ app.post('/join-company', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.post('/join-company-admin', async(req, res) => {
+  try {  
+      //Find's the company ID associated with the join code
+      //updates calling user's company ID and application_Status to Pending
+      let getCompanyID = await sqlStatement(`SELECT * FROM Company WHERE Company_Invite_Code = "${req.body.Company_Invite_Code}"`);
+      let addRelationship = await sqlStatement(`INSERT INTO User_To_Company (idUser,Company_Id,Application_Status) VALUES (${req.body.userID},${getCompanyID[0].CompanyID},"Complete")`);
+      //let updateUser = await sqlStatement(`UPDATE User SET Company_ID="${getCompanyID[0].CompanyID}", Application_Status="Pending" where idUser="${req.session.userID}"`)
+      res.redirect("back");
+      return;
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 app.post('/updateApplication', async(req, res) => {
   try {  
       //Find's the company ID associated with the join code
@@ -504,17 +518,22 @@ app.post('/editEmail', async(req, res) => {
 })
 app.post('/editCompanyName', async(req, res) => {
   try {  
-    sqlStatement(`UPDATE Company SET Company_Name="${req.body.Company_Name}" where CompanyID="${req.session.companyID}"`).then((value) =>{
-      res.redirect('/editCompany');
+    sqlStatement(`UPDATE Company SET Company_Name="${req.body.Company_Name}" where CompanyID="${req.body.CompanyID}"`).then((value) =>{
+      res.redirect('back');
     });
   }catch (e) {
     res.end(e.message || e.toString());
   }
 })
+app.post('/deleteCompany', async(req, res) => {
+  let waitDelete = await sqlStatement(`DELETE FROM Company where CompanyID="${req.body.CompanyID}"`);
+  let waitDeleteRelationships = await sqlStatement(`DELETE FROM User_To_Company where Company_Id="${req.body.CompanyID}"`); 
+  res.redirect('/manageSponsors');
+})
 app.post('/editCompanyAddress', async(req, res) => {
   try {  
-    sqlStatement(`UPDATE Company SET Company_Address="${req.body.Company_Address}" where CompanyID="${req.session.companyID}"`).then((value) =>{
-      res.redirect('/editCompany');
+    sqlStatement(`UPDATE Company SET Company_Address="${req.body.Company_Address}" where CompanyID="${req.body.CompanyID}"`).then((value) =>{
+      res.redirect('back');
     });
   }catch (e) {
     res.end(e.message || e.toString());
@@ -610,6 +629,16 @@ app.get('/editCompany', function(req, res){
   console.log(req.session.companyID);
       sqlStatement(`SELECT * from Company WHERE CompanyID = ${req.session.companyID}`).then((value) => {
           res.render('editcompany.ejs',{
+            username: req.session.username,
+            userID: req.session.userID,
+            companySQL : value,
+          });
+        });
+});
+app.get('/editCompanyA', function(req, res){
+  console.log(req.session.companyID);
+      sqlStatement(`SELECT * from Company WHERE CompanyID = ${req.query.CompanyID}`).then((value) => {
+          res.render('editcompanyA.ejs',{
             username: req.session.username,
             userID: req.session.userID,
             companySQL : value,
@@ -714,7 +743,7 @@ app.get('/manageDrivers', function(req, res){
           }
         }
         //array is empty for some reason
-        console.log(value);
+        //console.log(value);
         res.render('managedrivers.ejs',{
           username: req.session.username,
           userID: req.session.userID,
@@ -734,6 +763,16 @@ app.get('/manageUsers', function(req, res){
         });
     });
 });
+app.get('/manageSponsors', function(req, res){
+  sqlStatement(`SELECT * from Company`).then((value)=>{
+        //array is empty for some reason
+        res.render('managesponsors.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          sponsors: value
+        });
+    });
+});
 
 app.get('/signupAdmin', function(req, res){
   res.render('signupadmin.ejs',{
@@ -742,12 +781,28 @@ app.get('/signupAdmin', function(req, res){
 })
 app.get('/manageProfile', function(req, res){
   sqlStatement(`select * from User where Username = "${req.query.Username}"`).then((value) => {
-      res.render('manageprofile.ejs',{
-        username: req.session.username,
-        userID: req.session.userID,
-        userObj: value,
-        userType: req.session.userType
+    sqlStatement(`select * FROM User_To_Company WHERE idUser=${value[0].idUser}`).then((sponsorInfo) =>{
+      console.log(sponsorInfo);
+      
+      let promiseArray = [];
+        for(let i = 0; i < sponsorInfo.length; i++){
+          let tempPromise = sqlStatement(`SELECT * from Company WHERE CompanyID = ${sponsorInfo[i].Company_Id}`).then((value) => {
+            return value[0];
+          });
+          promiseArray.push(tempPromise);
+        }
+      Promise.all(promiseArray).then((array) =>{
+        res.render('manageprofile.ejs',{
+          username: req.session.username,
+          userID: req.session.userID,
+          userObj: value,
+          userType: req.session.userType,
+          sponsorInfo: array
+        });
       });
+      
+    });
+
     });
 })
 app.get('/signupDriver', function(req, res){
@@ -871,12 +926,16 @@ app.get('/editAccountS', function(req, res){
 app.post('/deleteAccount', async(req, res) => {
   
   if(req.session.userType == "Admin"){
-    let waitDelete = await sqlStatement(`DELETE FROM User where idUser="${req.body.userID}"`);
-    let waitDelet2 = await sqlStatement(`DELETE FROM User_To_Company where idUser="${req.body.userID}"`);
-    res.redirect('/manageUsers');
+    if(req.body.type == "deleteUser"){
+      let waitDelete = await sqlStatement(`DELETE FROM User where idUser="${req.body.userID}"`);
+      let waitDelet2 = await sqlStatement(`DELETE FROM User_To_Company where idUser="${req.body.userID}"`);
+      res.redirect('/manageUsers');
+    }else if(req.body.type == "removeFromCompany"){
+      let waitDelete = await sqlStatement(`SELECT * FROM User_To_Company where idUser="${req.body.userID}" and Company_Id="${req.body.CompanyID}"`);
+      let waitDelete2 = await sqlStatement(`DELETE FROM User_To_Company where id="${waitDelete[0].Id}"`);
+      res.redirect('back');
+    }
   }else{
-    console.log(req.body.userID);
-    console.log(req.session.companyID);
     let waitDelete = await sqlStatement(`SELECT * FROM User_To_Company where idUser="${req.body.userID}" and Company_Id="${req.session.companyID}"`);
     let waitDelete2 = await sqlStatement(`DELETE FROM User_To_Company where id="${waitDelete[0].Id}"`);
     res.redirect('/manageDrivers');
@@ -888,10 +947,10 @@ app.post('/generateReport', async(req, res) => {
   console.log("report type is: " + report_Type);
   let report = await sqlStatement(`SELECT * FROM Transaction_history`);
   if(report.length == 0){
-    res.send("no reports");
+    return res.send("no reports");
   }
   else{
-    res.render("reports.ejs",{
+    return res.render("reports.ejs",{
       username: req.session.username,
       report: report 
     });
@@ -1035,11 +1094,14 @@ app.get('/product', function(req, res){
 });
 app.get('/profile', function(req,res){
   sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
-  res.render('profile.ejs',{
-    username: req.session.username,
-    userID: req.session.userID,
-    userObj: value
-  });
+    sqlStatement(`select * FROM User_To_Company WHERE idUser="${value.idUser}"`).then((sponsorInfo) =>{
+      res.render('profile.ejs',{
+        username: req.session.username,
+        userID: req.session.userID,
+        userObj: value,
+        sponsorInfo: sponsorInfo
+      });
+    })
   });
 })
 function sponsorPage(req,res){

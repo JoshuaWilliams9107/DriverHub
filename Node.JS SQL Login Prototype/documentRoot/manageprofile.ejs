@@ -96,13 +96,37 @@
             <form method="POST" action="/deleteAccount" style="display:inline-block;margin-top:10px">
                 <input type="hidden" value="<%=userObj[0].idUser%>" name="userID"/>
                 <%if(userType == "Admin"){%>
+                    <input type="hidden" value="deleteUser" name="type"/>
                     <input type="submit" value="Delete User" /><br>
                 <%}else{%>
+                    <input type="hidden" value="removeFromCompany" name="type"/>
                     <input type="submit" value="Remove User From Company" /><br>
                 <%}%>
-                
             </form>
             </div>
+            <%if(userType == "Admin" && userObj[0].User_Type == "Driver"){%>
+                <form action="/join-company-admin" method="POST">
+                    <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
+                    <input type="hidden" value="<%=userObj[0].idUser%>" name="userID"/>
+                    <input type="submit" value="Add User to Company"> <br>
+                </form>
+                <%if(sponsorInfo.length == 0){%>
+                    <p>This driver is not associated with any sponsors</p>
+                <%}else{%>
+                    <p>Driver is associated with the following sponsors</p>
+                    <% for(let i = 0; i < sponsorInfo.length; i++){%>
+                    <p style="display: inline-block;"><%=sponsorInfo[i].Company_Name%></p>
+                    <form method="POST" action="/deleteAccount" style="display:inline-block;margin-top:10px">
+                        <input type="hidden" value="<%=userObj[0].idUser%>" name="userID"/>
+                        <input type="hidden" value="removeFromCompany" name="type"/>
+                        <input type="hidden" value="<%=sponsorInfo[i].CompanyID%>" name="CompanyID"/>
+                        <input type="submit" value="Remove User From Company" /><br>      
+                    </form>
+                    
+                    <br>
+                    <%}
+                }%>
+            <%}%>
         </div>
 
     </body>

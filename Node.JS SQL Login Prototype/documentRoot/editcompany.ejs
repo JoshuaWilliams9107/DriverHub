@@ -82,10 +82,12 @@
         <center>
             <p>Please type in your company's information</p>
             <form action="/editCompanyName" method="POST">
+                <input type="hidden" name="CompanyID" value="<%=companySQL[0].CompanyID%>"/>
                 <input type="text" placeholder="Company Name" name="Company_Name" value="<%=companySQL[0].Company_Name%>"><br>
                 <input type="submit" value="Update Name"> <br>
             </form>
             <form action="/editCompanyAddress" method="POST">
+                <input type="hidden" name="CompanyID" value="<%=companySQL[0].CompanyID%>"/>
                 <input type="text" placeholder="Company Address" name="Company_Address" value="<%=companySQL[0].Company_Address%>"><br>
                 <input type="submit" value="Update Address"> <br>
             </form>
