@@ -124,6 +124,7 @@
             <%if(userObj[0].User_Type == "Sponsor"){%>
                 <form action="/addToBlacklist" method="POST">
                     <input name="itemID" type="hidden" value="<%=productID%>">
+                    <input name="itemTitle" type="hidden" value="<%=ebayObj.Item.Title%>">
                     <input type="submit" value="Remove Item from catalog" name="decision"><br>
                 </form>
                 <%}%>
