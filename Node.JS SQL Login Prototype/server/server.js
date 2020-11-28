@@ -1201,6 +1201,29 @@ app.get('/',function(req,res){
 //  res.send('Hello World!')
 //}
 
+app.post('/submit-form-notify', async(req, res) => {
+  try {  
+    req = true;
+    var mailOptions = {
+      from: 'driverhubautomated@gmail.com',
+      to: '<%=email>',
+      subject: 'Notifications',
+      text: `Successful Signup!`
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+    res.redirect("/recoverycode");
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
