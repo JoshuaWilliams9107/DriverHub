@@ -137,12 +137,15 @@
 
           </div>
           <br><br>
-          <%if(userObj.User_Type == "Sponsor"){%>
+          <%if(userObj.User_Type == "Sponsor" || userObj.User_Type == "Admin"){%>
             <p>currently viewing as a <%=userType%></p>
           <form action="/changeUserType" method="POST">
           <select id="cars" name="usertype">
           <option value="Sponsor">Sponsor</option>
           <option value="Driver">Driver</option>
+          <%if(userObj.User_Type == "Admin"){%>
+            <option value="Driver">Admin</option>
+            <%}%>
           </select>
           <input type="submit" value="Change View"/>
             </form>
@@ -159,6 +162,7 @@
     </center>
     </div>
         <div style ="background-color: white;margin-left:10%;margin-right:10%;">
+        <%if(userSQL){%>
         <%if(userSQL[0].Application_Status == "Complete"){%>
         <%
         if(ebayObj){%>
@@ -197,35 +201,41 @@
                             <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
                         </div>
                 </div>
-         <%}}}else{%>
+         <%}}%>
+         <center>
+            <div style="padding-bottom:100px;padding-top: 20px;">
+                <table style="margin-left: auto;margin-right: auto;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;">
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-4" Onclick="JumpPage(-4);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-3" Onclick="JumpPage(-3);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-2" Onclick="JumpPage(-2);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-1" Onclick="JumpPage(-1);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #144879;color:white;font-weight: bold;"type="button" id="middle" Onclick="JumpPage(0);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+1" Onclick="JumpPage(1);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+2" Onclick="JumpPage(2);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+3" Onclick="JumpPage(3);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+4" Onclick="JumpPage(4);" ></button></th>
+                    <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();">&#8250;</button></th>
+                </table>
+                <input id="jump" placeholder="#" size="2" style="font-size:30px;">
+                <button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="JumpPageText();">&#8250;</button>
+            </div>
+            </center>
+        <%}else{%>
             <center>
             <p style="padding-top: 50px;padding-bottom: 50px;">no search results were found</p>
             </center>
             <%}%>
             <%}else{%>
-                <p>You must join a company before you can view the catalog</p>
+                <p>Your company has not accepted your application yet</p>
+                <%}%>
+            <%}else{%>
+                <p>You must create/join a company before you can view the catalog</p>
                 <%}%>
 
+
         </div>
-        <center>
-        <div style="padding-bottom:100px;padding-top: 20px;">
-            <table style="margin-left: auto;margin-right: auto;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;">
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-4" Onclick="JumpPage(-4);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-3" Onclick="JumpPage(-3);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-2" Onclick="JumpPage(-2);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-1" Onclick="JumpPage(-1);" ></button></th>
-                <th><button style="font-size:40px;background-color: #144879;color:white;font-weight: bold;"type="button" id="middle" Onclick="JumpPage(0);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+1" Onclick="JumpPage(1);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+2" Onclick="JumpPage(2);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+3" Onclick="JumpPage(3);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+4" Onclick="JumpPage(4);" ></button></th>
-                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();">&#8250;</button></th>
-            </table>
-            <input id="jump" placeholder="#" size="2" style="font-size:30px;">
-            <button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="JumpPageText();">&#8250;</button>
-        </div>
-        </center>
+        
     </body>
 </html>
 
