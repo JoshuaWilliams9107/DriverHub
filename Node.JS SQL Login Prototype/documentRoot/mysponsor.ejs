@@ -99,7 +99,9 @@
             <input type="text" placeholder="Invite Code" name="Company_Invite_Code"><br>
             <input type="submit" value="Join Company"> <br>
             </form>
-            <%}}%>
+            <%}}else if(userType == "Admin"){%>
+                <p>Admins Cannot Have Sponsors</p>
+            <%}%>
             <%if(User_To_Company){%>
                 <%if(userType == "Sponsor"){%>
                     <%if(User_To_Company[0].Application_Status == "Pending"){%>
