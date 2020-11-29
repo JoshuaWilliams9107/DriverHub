@@ -184,13 +184,22 @@ app.post('/submit-form-signup-driver-for-sponsor', async(req, res) => {
 app.post('/changeUserType', async(req, res) => {
   try {  
     if(req.body.usertype == "Sponsor"){
+      let relationshipSQL = await sqlStatement(`SELECT * FROM User_To_Company WHERE idUser="${req.session.userID}"`);
+      if(relationshipSQL.length > 0){
+        req.session.companyID = relationshipSQL[0].Company_Id;
+      }
       req.session.userType = "Sponsor";
       res.redirect("/home");
     }else if(req.body.usertype == "Driver"){
+      let relationshipSQL = await sqlStatement(`SELECT * FROM User_To_Company WHERE idUser="${req.session.userID}"`);
+      if(relationshipSQL.length > 0){
+        req.session.companyID = relationshipSQL[0].Company_Id;
+      }
       let changePointBalance = await sqlStatement(`UPDATE User_To_Company SET Point_Balance=100000 WHERE idUser=${req.session.userID}`)
       req.session.userType = "Driver";
       res.redirect("/home");
     }else if(req.body.usertype == "Admin"){
+      req.session.companyID = null;
       req.session.userType = "Admin";
       res.redirect("/home");
     }
@@ -462,25 +471,30 @@ app.post('/checkout', async(req, res) => {
       for(let i = 0; i < req.session.cart.length; i++){
         ebayObjArray.push(await ebay.getSingleItem(req.session.cart[i]));
       }
-      let totalPrice = 0;
-      for(let i = 0; i < ebayObjArray.length; i++){
-        console.log("current price is: " + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value));
-        totalPrice = totalPrice + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value)
-      }
-      console.log("the total price is: " + totalPrice);
-      if(totalPrice > pointBalance){
-        res.send("you don't have enough points");
+      companyObj = await sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`);
+        for(let i = 0; i < ebayObjArray.length; i++){
+          ebayObjArray[i].Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value)).toFixed(2);
+        }
+        let totalPrice = 0;
+        for(let i = 0; i < ebayObjArray.length; i++){
+          console.log("current price is: " + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value));
+          totalPrice = totalPrice + parseFloat(ebayObjArray[i].Item.ConvertedCurrentPrice.Value)
+        }
+        console.log("the total price is: " + totalPrice);
+        if(totalPrice > pointBalance){
+          res.send("you don't have enough points");
+          return;
+        }
+        for(let i = 0, len = req.session.cart.length; i < len; i++){
+          req.session.cart.splice(0,1);
+        }
+        pointBalance = pointBalance-totalPrice;
+        let date = new Date().toLocaleString();
+        let getUser = await sqlStatement(`SELECT * FROM User WHERE Username = "${userName}"`);
+        let insert = await sqlStatement(`INSERT INTO Transaction_history (UserID,Time_Purchased,Amount,Company,UserName) VALUES ("${getUser[0].idUser}","${date}","${totalPrice}","${getUser[0].Company_Id}","${userName}")`);
+        let update = await sqlStatement(`UPDATE User_To_Company SET Point_Balance=${pointBalance} WHERE idUser=${req.session.userID} AND Company_Id=${req.session.companyID};`)
+        res.redirect('back');
         return;
-      }
-      for(let i = 0, len = req.session.cart.length; i < len; i++){
-        req.session.cart.splice(0,1);
-      }
-      let date = new Date().toLocaleString();
-      let getUser = await sqlStatement(`SELECT * FROM User WHERE Username = "${userName}"`);
-      let insert = await sqlStatement(`INSERT INTO Transaction_history (UserID,Time_Purchased,Amount,Company,UserName) VALUES ("${getUser[0].idUser}","${date}","${totalPrice}","${getUser[0].Company_Id}","${userName}")`);
-      res.redirect('back');
-      return;
-    return;
   }catch (e) {
     res.end(e.message || e.toString());
   }
@@ -624,6 +638,7 @@ app.get('/logout', function(req, res){
   req.session.userID = null;
   req.session.userType = null;
   req.session.cart = null;
+  req.session.companyID=null;
   res.redirect("/login");
 });
 app.get('*', function(req, res, next){
@@ -697,7 +712,6 @@ app.get('/addPointsAdmin', function(req, res){
         }else{
           return null;
         }
-        
       });
       promiseArray.push(tempPromise);
     }
@@ -1000,11 +1014,9 @@ app.post('/generateReport', async(req, res) => {
   return;
 })
 app.get('/cart', function(req, res){
-  //this isn't done
-  //need to run getSingleItem a variable amount of times
       getCartInfo(req).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
-            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+            sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
               sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
                 if(data){
                   for(let i = 0; i < data.length; i++){
@@ -1121,6 +1133,8 @@ function driverPage(req, res){
                       if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
                         console.log("removed item");
                         data[0].searchResult[0].item.splice(i, 1);
+                        i--;
+                        break;
                       }
                     }
                     
@@ -1164,7 +1178,7 @@ app.get('/product', function(req, res){
   let productID = req.query.id;
       ebay.getSingleItem(productID).then((data) => {
           sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
-            sqlStatement(`SELECT * from Company where CompanyID = "${userObj[0].Company_Id}"`).then((companyObj) => {
+            sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
               sqlStatement(`select Point_Balance from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
                 data.Item.ConvertedCurrentPrice.Value = (companyObj[0].Points_to_Dollar*data.Item.ConvertedCurrentPrice.Value).toFixed(2);
                 res.render("productpage.ejs",{
@@ -1226,6 +1240,7 @@ function sponsorPage(req,res){
     
     sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
       console.log(`Company length: ${company.length}`);
+      console.log(`Company length: ${company.Company_Name}`);
       if(company.length == 0){
           res.render("sponsorpage.ejs",{
             username: req.session.username,
@@ -1257,6 +1272,8 @@ function sponsorPage(req,res){
                       if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
                         console.log("removed item");
                         data[0].searchResult[0].item.splice(i, 1);
+                        i--;
+                        break;
                       }
                     }
                     
