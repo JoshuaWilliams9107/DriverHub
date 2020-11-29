@@ -1012,6 +1012,7 @@ app.get('/cart', function(req, res){
                   }
                 }
                 console.log(data);
+                if(value.length > 0){
                 res.render("cart.ejs",{
                   username: req.session.username,
                   userType: req.session.userType,
@@ -1020,7 +1021,18 @@ app.get('/cart', function(req, res){
                   userBalance: value[0].Point_Balance,
                   ebayObj: data,
                   companySQL: companyObj});
-              });
+              
+              }else{
+                res.render("cart.ejs",{
+                  username: req.session.username,
+                  userType: req.session.userType,
+                  userObj:userObj,
+                  userID: req.session.userID,
+                  userBalance: 0,
+                  ebayObj: data,
+                  companySQL: companyObj});
+              }
+            });
             });
           });
       });
