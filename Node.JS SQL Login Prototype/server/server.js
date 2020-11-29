@@ -190,6 +190,9 @@ app.post('/changeUserType', async(req, res) => {
       let changePointBalance = await sqlStatement(`UPDATE User_To_Company SET Point_Balance=100000 WHERE idUser=${req.session.userID}`)
       req.session.userType = "Driver";
       res.redirect("/home");
+    }else if(req.body.usertype == "Admin"){
+      req.session.userType = "Admin";
+      res.redirect("/home");
     }
     
   }catch (e) {
@@ -1033,12 +1036,14 @@ async function getCartInfo(req){
   return ebayObjArray;
 }
 function adminPage(req,res){
-  
+  sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
     res.render('adminpage.ejs',{
       username: req.session.username,
       userID: req.session.userID,
+      userObj:userObj[0],
+      userType: req.session.userType
     });
-
+  });
   //let driversobject=getDrivers();
   //res.render('adminpage.ejs',{
   //  username: req.session.username,
@@ -1065,18 +1070,34 @@ function driverPage(req, res){
   }
   sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((company) => {
     let catalogRule = "";
-    if(company[0].Catalog_Rule){
-      catalogRule = company[0].Catalog_Rule + " 99 26395";
-    }else{
-      catalogRule= "99 26395";
+    if(company.length > 0){
+      if(company[0].Catalog_Rule){
+        catalogRule = company[0].Catalog_Rule + " 99 26395";
+      }else{
+        catalogRule= "99 26395";
+      }
     }
+    sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+      if(company.length == 0){
+          res.render("driverpage.ejs",{
+            username: req.session.username,
+            userObj:userObj[0],
+            userType: req.session.userType,
+            userID: req.session.userID,
+            userBalance: 0,
+            ebayObj: null,
+            companySQL: null,
+            userSQL: null});
+          // Data is in format of JSON
+          // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+      }else{
       ebay.findItemsAdvanced({
           keywords: searchKeyword,
           entriesPerPage: 10,
           pageNumber: parseInt(pageOffset)+1,
           ExcludeCategory: catalogRule
       }).then((data) => {
-          sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+          
             sqlStatement(`select * from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
             if(value[0].Application_Status == "Complete"){
               sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
@@ -1093,7 +1114,7 @@ function driverPage(req, res){
                     
                   }
 
-                  res.render("sponsorpage.ejs",{
+                  res.render("driverpage.ejs",{
                     username: req.session.username,
                     userObj:userObj[0],
                     userType: req.session.userType,
@@ -1107,7 +1128,7 @@ function driverPage(req, res){
                  });
               });
             }else{
-            res.render("sponsorpage.ejs",{
+            res.render("driverpage.ejs",{
               username: req.session.username,
               userObj:userObj[0],
               userType: req.session.userType,
@@ -1121,8 +1142,11 @@ function driverPage(req, res){
           }
           });
         });
+        }
         });
       });
+
+      
 }
 app.get('/product', function(req, res){
   let productID = req.query.id;
@@ -1180,48 +1204,67 @@ function sponsorPage(req,res){
   }
   sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((company) => {
     let catalogRule = "";
-    if(company[0].Catalog_Rule){
-      catalogRule = company[0].Catalog_Rule + " 99 26395";
-    }else{
-      catalogRule= "99 26395";
+    if(company.length > 0){
+      if(company[0].Catalog_Rule){
+        catalogRule = company[0].Catalog_Rule + " 99 26395";
+      }else{
+        catalogRule= "99 26395";
+      }
     }
+    
+    sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+      console.log(`Company length: ${company.length}`);
+      if(company.length == 0){
+          res.render("sponsorpage.ejs",{
+            username: req.session.username,
+            userObj:userObj[0],
+            userType: req.session.userType,
+            userID: req.session.userID,
+            userBalance: 0,
+            ebayObj: null,
+            companySQL: null,
+            userSQL: null});
+          // Data is in format of JSON
+          // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+      }else{
       ebay.findItemsAdvanced({
           keywords: searchKeyword,
           entriesPerPage: 10,
           pageNumber: parseInt(pageOffset)+1,
           ExcludeCategory: catalogRule
       }).then((data) => {
-          sqlStatement(`SELECT * from User where idUser = "${req.session.userID}"`).then((userObj) => {
+          
             sqlStatement(`select * from User_To_Company where Company_Id = "${req.session.companyID}" AND idUser = "${req.session.userID}"`).then((value) => {
             if(value[0].Application_Status == "Complete"){
               sqlStatement(`SELECT * from Company where CompanyID = "${req.session.companyID}"`).then((companyObj) => {
-               sqlStatement(`SELECT * FROM Item_BlackList WHERE CompanyID=${req.session.companyID};`).then((blacklist) => {
+                sqlStatement(`SELECT * FROM Item_BlackList WHERE CompanyID=${req.session.companyID};`).then((blacklist) => {
                 
-                for(let i = 0; i < data[0].searchResult[0].item.length; i++){
-                  data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
-                  for(let j = 0; j < blacklist.length; j++){
-                    if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
-                      data[0].searchResult[0].item.splice(i, 1);
+                  for(let i = 0; i < data[0].searchResult[0].item.length; i++){
+                    data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__ = (companyObj[0].Points_to_Dollar*parseFloat(data[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)).toFixed(2);
+                    for(let j = 0; j < blacklist.length; j++){
+                      if(data[0].searchResult[0].item[i].itemId[0] == blacklist[j].itemID){
+                        console.log("removed item");
+                        data[0].searchResult[0].item.splice(i, 1);
+                      }
                     }
+                    
                   }
-                  
-                }
 
-                res.render("sponsorpage.ejs",{
-                  username: req.session.username,
-                  userType: req.session.userType,
-                  userObj:userObj[0],
-                  userID: req.session.userID,
-                  userBalance: value[0].Point_Balance,
-                  ebayObj: data,
-                  companySQL: companyObj,
-                  userSQL: value});
-                // Data is in format of JSON
-                // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
-               });
+                  res.render("sponsorpage.ejs",{
+                    username: req.session.username,
+                    userObj:userObj[0],
+                    userType: req.session.userType,
+                    userID: req.session.userID,
+                    userBalance: value[0].Point_Balance,
+                    ebayObj: data,
+                    companySQL: companyObj,
+                    userSQL: value});
+                  // Data is in format of JSON
+                  // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
+                 });
               });
             }else{
-            res.render("driverpage.ejs",{
+            res.render("sponsorpage.ejs",{
               username: req.session.username,
               userObj:userObj[0],
               userType: req.session.userType,
@@ -1233,9 +1276,9 @@ function sponsorPage(req,res){
             // Data is in format of JSON
             // To check the format of Data, Go to this url https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search#w4-w1-w4-SearchforItemsbyCategory-1.
           }
-        
           });
         });
+        }
         });
       });
 }
