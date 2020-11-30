@@ -524,7 +524,6 @@ app.post('/edit-profile', async(req, res) => {
   });
 })
 
-
 app.post('/editUsername', async(req, res) => {
   //Need to do validation with session
   try {  
@@ -1206,6 +1205,28 @@ app.get('/editBlackList', function(req,res){
     })
   });
 });
+app.post('/submit-form-notify', async(req, res) => {
+  try {  
+    req = true;
+    var mailOptions = {
+      from: 'driverhubautomated@gmail.com',
+      to: '<%=email>',
+      subject: 'Notifications',
+      text: `Successful Signup!`
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+    res.redirect("/recoverycode");
+    return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+})
 app.get('/profile', function(req,res){
   sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
     sqlStatement(`select * FROM User_To_Company WHERE idUser="${value.idUser}"`).then((sponsorInfo) =>{
