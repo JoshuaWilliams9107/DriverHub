@@ -2,6 +2,31 @@
 <html>
     <head>
         <style>
+            input[type=button], input[type=submit], input[type=reset] {
+                background-color: #5eadff;
+                border-radius: 3px;
+                border: none;
+                color: black;
+                padding: 3px 6px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
+            input[type=button]:hover, input[type=submit]:hover {
+                background-color: #325c88;
+                border: none;
+                color: white;
+                border-radius: 3px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
             body {
                 margin: 0;
                 font-family: Arial;
@@ -117,6 +142,9 @@
             <div style="max-width: 400px; max-height: 400px;">
             <img style="max-width: 100%;max-height: 100%; object-fit: contain;"src = "<%=ebayObj.Item.PictureURL[0]%>">
             </div>
+            <br>
+            <br>
+            <br>
             <p style="font-size:20px; font-weight:bold;"><%=ebayObj.Item.Title%></p>
             <p><%=ebayObj.Item.ConvertedCurrentPrice.Value%> Points</p>
             <form action="/addToCart" method="POST">
@@ -130,11 +158,11 @@
                     <input type="submit" value="Remove Item from catalog" name="decision"><br>
                 </form>
                 <%}%>
-            <center>
+            
             <%for(let i = 0; i < ebayObj.Item.ItemSpecifics.NameValueList.length; i++){%>
             <p><%=ebayObj.Item.ItemSpecifics.NameValueList[i].Name%> : <%=ebayObj.Item.ItemSpecifics.NameValueList[i].Value[0]%></p>
             <%}%>
-            </center>
+            
             
             
            

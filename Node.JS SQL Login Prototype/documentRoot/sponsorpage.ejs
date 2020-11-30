@@ -2,9 +2,37 @@
 <html>
     <head>
         <style>
+            
+            input[type=button], input[type=submit], input[type=reset] {
+                background-color: #5eadff;
+                border-radius: 3px;
+                border: none;
+                color: black;
+                padding: 3px 6px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
+            input[type=button]:hover, input[type=submit]:hover {
+                background-color: #325c88;
+                border: none;
+                color: white;
+                border-radius: 3px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
             body {
                 margin: 0;
                 font-family: Arial;
+                font-size: 17px;
+                background-color: whitesmoke;
             }
            #topnav {
                 
@@ -137,6 +165,7 @@
 
           </div>
           <br><br>
+          <center>
           <%if(userObj.User_Type == "Sponsor" || userObj.User_Type == "Admin"){%>
             <p>currently viewing as a <%=userType%></p>
           <form action="/changeUserType" method="POST">
@@ -150,6 +179,8 @@
           <input type="submit" value="Change View"/>
             </form>
           <%}%>
+        </center>
+        <br>
             
             
         </center>
