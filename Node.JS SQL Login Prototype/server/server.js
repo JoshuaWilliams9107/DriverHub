@@ -1227,6 +1227,11 @@ app.post('/submit-form-notify', async(req, res) => {
     res.end(e.message || e.toString());
   }
 })
+app.get('/notifications', function(req,res){
+      res.render('notifications.ejs',{
+        username: req.session.username
+      });
+})
 app.get('/profile', function(req,res){
   sqlStatement(`select * from User where Username = "${req.session.username}"`).then((value) => {
     sqlStatement(`select * FROM User_To_Company WHERE idUser="${value.idUser}"`).then((sponsorInfo) =>{
