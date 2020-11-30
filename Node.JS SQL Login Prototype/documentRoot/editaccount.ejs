@@ -261,6 +261,20 @@
                 <%if(userExists == "true") { %>
                         <h2 style="color:red;">Username is taken</h2>
                         <%}%>
+                <form method="POST" action="/editPassword" id="signupForm">
+                        <input type="password" name="create_password" oninput="run(); passwordStrength(); ifChanged();" id="create_password" placeholder = "password" required/><br><br>
+                        <label id="errorMsgs">Password Strength</label>
+                        <div id="myProgress">
+                                <div id="myBar" style="text-align: left;"></div>
+                                </div>
+                                <label for="password">Confirm Password:</label><br><br>
+                        <label for="errorLabel" id="errorLabel"></label><br><br>
+                        <input type="password" name="confirm_password" oninput="run()" id="confirm_password" placeholder = "confirm password"/><br><br>
+                        <input type="hidden" name="userID" value="<%=userObj[0].idUser%>"/>
+                        <input type="hidden" name="oUsername" value="<%=userObj[0].Username%>"/>
+                        <button type="submit" id="submitButton">Update Password</button>
+                </form>
+                <br>
                 <form method="POST" action="/editUsername" id="signupForm">
                         <input type="text" name="create_username" id="username" oninput="ifChanged()" value="<%=userObj[0].Username%>"placeholder = "username" required/><br><br>
                         <input type="hidden" name="userID" value="<%=userObj[0].idUser%>"/>
@@ -275,19 +289,7 @@
                         <button type="submit" id="submitButton">Update Email</button>
                 </form>
                 <br>
-                <form method="POST" action="/editPassword" id="signupForm">
-                        <input type="password" name="create_password" oninput="run(); passwordStrength(); ifChanged();" id="create_password" placeholder = "password" required/><br><br>
-                        <label id="errorMsgs">Password Strength</label>
-                        <div id="myProgress">
-                                <div id="myBar" style="text-align: left;"></div>
-                              </div>
-                              <label for="password">Confirm Password:</label><br><br>
-                        <label for="errorLabel" id="errorLabel"></label><br><br>
-                        <input type="password" name="confirm_password" oninput="run()" id="confirm_password" placeholder = "confirm password"/><br><br>
-                        <input type="hidden" name="userID" value="<%=userObj[0].idUser%>"/>
-                        <input type="hidden" name="oUsername" value="<%=userObj[0].Username%>"/>
-                        <button type="submit" id="submitButton">Update Password</button>
-                </form>
+                
 
 
                         

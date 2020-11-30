@@ -67,6 +67,11 @@ app.set('views', __dirname + "/../documentRoot");
 app.engine('html', require('ejs').renderFile);
 app.set('viewengine', "ejs");
 
+process.on('uncaughtException', function (err) {
+  console.error(err);
+  res.send(err);
+});
+
 app.post('/submit-form', async(req, res) => {
   if(!req.session.submitNumber){
     req.session.submitNumber = 0;
@@ -100,7 +105,7 @@ app.post('/submit-form', async(req, res) => {
 function sqlStatement(sqlCommand){
   return new Promise((resolve,reject) => {con.query(sqlCommand,(err, result) => {
     if (err){
-     throw err;
+     return null;
      }
     return err ? reject(err) : resolve(result);
    });
@@ -997,6 +1002,7 @@ app.post('/deleteAccount', async(req, res) => {
   
 });
 app.post('/generateReport', async(req, res) => {
+  try{
   let report_Type = req.body.reportType;
   console.log("report type is: " + report_Type);
   let report = await sqlStatement(`SELECT * FROM Transaction_history`);
@@ -1011,6 +1017,10 @@ app.post('/generateReport', async(req, res) => {
   }
   res.redirect('back');
   return;
+  }catch (e) {
+    res.end(e.message || e.toString());
+  }
+  
 })
 app.get('/cart', function(req, res){
       getCartInfo(req).then((data) => {
