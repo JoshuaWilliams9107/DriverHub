@@ -140,25 +140,6 @@
             };
             window.onload = setButtons;
         </script>
-        <!-- THIS IS LOCALHOST FUNCTION JUST IN CASE
-        <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-        <script>
-          window.OneSignal = window.OneSignal || [];
-          OneSignal.push(function() {
-            OneSignal.init({
-              appId: "43e4e127-20bc-4ebd-b811-b60301a1d22e",
-            });
-          });
-        </script> -->
-        <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-        <script>
-          window.OneSignal = window.OneSignal || [];
-          OneSignal.push(function() {
-            OneSignal.init({
-              appId: "43e4e127-20bc-4ebd-b811-b60301a1d22e",
-            });
-          });
-        </script>
     </head>
     <body>
         <div id="topnav">
@@ -198,11 +179,12 @@
             </form>
           <%}%>
         </center>
+        <center>
+            <a href="/notifications"> Notification Settings</a> 
+            </center>
         <br>
         </center>
-
-            
-            
+        
         </center>
         <div style="margin-right:30%;margin-left:30%;padding-bottom:30px;">
             <center>
@@ -214,13 +196,7 @@
     
         <br><br>
         
-        <a href="/notifications"> Notification Settings</a>
         
-        <br><br>
-
-    <form method="POST" action="/submit-form-notify">
-          <button id="submit">Get Email Notifications</button>
-    </form>
     <div class='onesignal-customlink-container'></div>
     </div>
         <div style ="background-color: white;margin-left:10%;margin-right:10%;">
