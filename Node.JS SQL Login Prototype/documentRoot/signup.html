@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Prototype HTML Login</title>
+        <style>
+                label{
+                        font-size: 150%;
+                }
+                input{
+                        font-size: 150%;
+                }
+                #errorLabel{
+                        color:red;
+                }
+        </style>
+        <script>
+                function run() {
+                        let p1 = document.getElementById("create_password").value;
+                        let p2 = document.getElementById("confirm_password").value;
+                        if(p1 === p2){
+                                document.getElementById("submitButton").disabled = false;
+                                document.getElementById("errorLabel").innerHTML = "";
+
+                        }else{
+                                document.getElementById("submitButton").disabled = true;
+                                document.getElementById("errorLabel").innerHTML = "Passwords do not match";
+                        }
+                }
+        </script>
+</head>
+<body>
+        
+        <center style="padding-top:200px;">
+                <h1>Signup Page <%= test%></h1>
+                <form method="POST" action="dynamic/submit-form-signup" id="signupForm">
+                        <label for="firstname" id="firstname">First Name:</label><br>
+                        <input type="text" name="first_name" /><br>
+                        <label for="lastname" id="lastname">Last Name:</label><br>
+                        <input type="text" name="last_name" /><br>
+                        <label for="text" id="username">New Username:</label><br>
+                        <input type="text" name="create_username" /><br>
+                        <label for="email" id="email">Email Address:</label><br>
+                        <input type="text" name="email" /><br>
+                        <label for="password">Create Password:</label><br>
+                        <input type="password" name="create_password" oninput="run()" id="create_password"/><br>
+                        <label for="password">Confirm Password:</label><br>
+                        <label for="errorLabel" id="errorLabel"></label><br>
+                        <input type="password" name="confirm_password" oninput="run()" id="confirm_password"/><br>
+
+                        <input type="submit" id="submitButton"/>
+                </form>
+        </center>
+
+
+
+</body>
+</html>

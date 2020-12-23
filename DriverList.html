@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DriverList</title>
+	<style>
+		body{
+			margin-left: 10%;
+			margin-right: 10%;
+			font-family: "Gill Sans", Gill, sans-serif;
+		}
+		header{
+			font-size: 500%;
+			background-color: aquamarine;
+			text-align: center;
+			border-radius: 25px;
+		}
+		ul{
+			list-style-type: none;
+			margin: 0px;
+			padding: 0px;
+			background-color: aquamarine;
+			border-radius: 25px;
+			padding: 20px;
+		}
+		li{
+			display: inline;
+			padding: 20px;
+		}
+		a{
+			color: black;
+			text-decoration: none;
+			font-size: 150%;
+		}
+		#drivers{
+			border-collapse: collapse;
+			width: 100%;
+			text-align: center;
+		}
+		#drivers td, #drivers th{
+			border: 1px solid #ddd;
+			padding: 8px;
+		}
+		
+		#drivers tr:nth-child(even){background-color: #f2f2f2;}
+		
+		#drivers th{
+			padding-top: 12px;
+			padding-bottom: 12px;
+			background-color: aqua;
+		}
+		#drivers a{
+			font-size: 100%;
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		DriverHub
+	</header>
+	
+	<ul>
+  		<li><a href="#home">Home</a></li>
+  		<li><a href="#profile">Profile</a></li>
+  		<li><a href="#catalog">Catalog</a></li>
+  		<li><a href="#points">Drivers</a></li>
+		<li><a href="logout">Log Out</a></li>
+		<li>Sponsor View</li>
+	</ul>
+	
+	<br>
+	
+	<table id="drivers">
+		<tr>
+			<th>Driver</th>
+			<th>Points</th>
+			<th>Add</th>
+			<th>Sub</th>
+			<th>Rate</th>
+			<th>Date Added</th>
+			<th>Drop</th>
+		</tr>
+		<tr>
+			<td><a href="Profile.html">Al-Jamil, Tahani</a></td>
+			<td>400</td>
+			<td>+</td>
+			<td>-</td>
+			<td>1pt = $3.00</td>
+			<td>09/02/2019</td>
+			<td><a href="DropDriver.html">Drop</a></td>
+		</tr>
+		<tr>
+			<td><a href="Profile.html">Anagonye, Chidi</a></td>
+			<td>565</td>
+			<td>+</td>
+			<td>-</td>
+			<td>1pt = $1.00</td>
+			<td>11/04/2019</td>
+			<td><a href="DropDriver.html">Drop</a></td>
+		</tr>
+		<tr>
+			<td><a href="Profile.html">Mendoza, Jason</a></td>
+			<td>6</td>
+			<td>+</td>
+			<td>-</td>
+			<td>1pt = $0.05</td>
+			<td>12/22/2019</td>
+			<td><a href="DropDriver.html">Drop</a></td>
+		</tr>
+		<tr>
+			<td><a href="Profile.html">Shellstrop, Eleanor</a></td>
+			<td>4200</td>
+			<td>+</td>
+			<td>-</td>
+			<td>1pt = $2.50</td>
+			<td>02/06/2020</td>
+			<td><a href="DropDriver.html">Drop</a></td>
+		</tr>
+	</table>
+</body>
+</html>
