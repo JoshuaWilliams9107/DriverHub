@@ -1,0 +1,9 @@
+I have fully completed the CSS tutorial on W3Schools and will be designing
+	and implementing a full website look in the upcoming weeks. I will be
+	implementing a fully navigatable website and plan on making it look quite
+	nice and easy to use.
+
+I have found resources and done deep dive research into secure storage of data.
+	This will be implemented in the upcoming sprints and any unsecure placeholder
+	data that we use will be merely there for testing before we implement the 
+	security measures.

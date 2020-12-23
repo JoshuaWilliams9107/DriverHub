@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Prototype HTML Login</title>
+	<style>
+		input, input[placehorder] {
+			font-family: 'Arial';
+			text-align: center;
+			height:40px;
+			outline: none;
+			background-color: whitesmoke;
+			border: 0;
+		}
+		input:focus {
+			text-align: center;
+			height:40px;
+			border: 0;
+		}
+		body{
+			background-color: #2b2727;
+			font-family: 'Arial';
+		}
+		label{
+			font-size: 150%;
+			border: 2px solid black;
+		}
+		input{
+			font-size: 150%;
+		}
+		#error{
+			font-size: 150%;
+			color:red;
+		}
+		#loginPage{
+			background-color: white;
+			width: 350px;
+			padding-bottom: 25px;
+			padding-top: 12.5px;
+			box-shadow:10px 10px 30px black;  
+		}
+		#submit{
+			font-family: 'Arial';
+			background-color: #5eadb0; /* Green */
+			border: 0;
+			color: white;
+			height:50px;
+			width:300px;
+			text-align: center;
+			font-weight: bold;
+			display: inline-block;
+			font-size:  28px;
+		}
+		#submit:hover {
+			background-color: #00b7bc;
+		}
+		#submit:focus {
+			border: 0;
+		}
+		a:visited{
+			color: #0000EE;
+		}
+	</style>
+</head>
+<body>
+	<center><h1 style="font-size:42px;padding-top:125px;color: white; text-shadow: 4px 4px black"">Driver Hub</h1></center>
+	
+	<center style="padding-top:25px;">
+		
+		<div id = "loginPage">
+				<h1 style="font-weight: bold;">Welcome!</h1>
+				<p style=>Please login or <a href = "/signup"  id="forgot">Create an account</a></p>
+				
+				<% if (test === "true") 
+				{ %> <p id="error">Incorrect Username/Password</p>
+ 				<% } %>
+		<form method="POST" action="/submit-form">
+			<!--<label for="username" >Username:</label><br>-->
+  			<input type="text" name="username" placeholder="username" /><br><br>
+  			<!--<label for="password">Password:</label><br>-->
+			<input type="password" name="password" placeholder="password" /><br><br>
+  			<button id="submit">Sign in</button>
+		</form>
+		<br>
+		<a href = ""  id="forgot">Forgot Password</a><br><br>
+		
+	</div>
+	
+	</center>
+
+	
+	
+
+</body>
+
+</html>
