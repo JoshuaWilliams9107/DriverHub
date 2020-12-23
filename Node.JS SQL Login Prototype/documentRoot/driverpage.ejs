@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            input[type=button], input[type=submit], input[type=reset] {
+                background-color: #8cc4ff;
+                border-radius: 3px;
+                border: none;
+                color: black;
+                padding: 3px 6px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
+            input[type=button]:hover, input[type=submit]:hover {
+                background-color: #325c88;
+                border: none;
+                color: white;
+                border-radius: 3px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 2px 2px black;
+                font-size:15px;
+            }
+            body {
+                margin: 0;
+                font-family: Arial;
+                font-size: 17px;
+                background-color: whitesmoke;
+            }
+           #topnav {
+                
+                overflow: hidden;
+                background-color: #333;
+            }
+
+            #topnav a {
+                color: #f2f2f2;
+                text-align: center;
+                padding: 21px 16px;
+                text-decoration: none;
+                font-size: 17px;
+
+            }
+
+            #topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            #topnav a.active {
+                background-color:#5eadff;
+                color:black;
+                font-weight:bold;
+                
+            }
+            .floatright{
+                float:right;
+            }
+            .floatleft{
+                float:left;
+            }
+            #search{
+                font-family: 'Arial';
+                background-color: #5eadb0; /* Green */
+                border: 0;
+                color: white;
+                height:37px;
+                width:72px;
+                text-align: left;
+                font-weight: bold;
+                display: inline;
+                padding: 7px;
+                font-size: 17px;
+                vertical-align: middle;
+            }
+        </style>
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            let pageNumber = parseInt(params.get('pageNumber'));
+            let search = params.get('search');
+            if(!pageNumber){
+                pageNumber = 0;
+            }
+            function setButtons(){
+                if(pageNumber-4 < 0){
+                    document.getElementById("middle-4").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-4").innerHTML = pageNumber-3;
+                }
+                if(pageNumber-3 < 0){
+                    document.getElementById("middle-3").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-3").innerHTML = pageNumber-2;
+                }
+                 if(pageNumber-2 < 0){
+                    document.getElementById("middle-2").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-2").innerHTML = pageNumber-1;
+                }
+                if(pageNumber-1 < 0){
+                    document.getElementById("middle-1").innerHTML = "_";
+                }else{
+                    document.getElementById("middle-1").innerHTML = pageNumber;
+                }
+                document.getElementById("middle").innerHTML = pageNumber+1;
+                document.getElementById("middle+1").innerHTML = pageNumber+2;
+                document.getElementById("middle+2").innerHTML = pageNumber+3;
+                document.getElementById("middle+3").innerHTML = pageNumber+4;
+                document.getElementById("middle+4").innerHTML = pageNumber+5;
+                console.log("Hello");
+            }
+            function JumpPageText(){
+                if(parseInt(document.getElementById("jump").value)){
+                    pageNumber = parseInt(document.getElementById("jump").value)-1;
+                    window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+                }
+            }
+            function NextPage() {
+                pageNumber++;
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+            };
+            function JumpPage(location) {
+                pageNumber+=location;
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber + "&search=" + search;
+            };
+            function PreviousPage() {
+                if(pageNumber > 0){
+                    pageNumber--;
+                }
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + pageNumber+ "&search=" + search;
+            };
+            function Search() {
+                window.location.href = window.location.href.split('?')[0] + "?" + "pageNumber=" + 0 + "&" + "search=" + document.getElementById("searchText").value;
+            };
+            window.onload = setButtons;
+        </script>
+    </head>
+    <body>
+        <div id="topnav">
+            <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
+            
+            <a href="/home" class="active" style="float:left;">Home</a>
+            <p style="float:right;" style="padding-right: 100px;"></p>
+            <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
+                
+            </div>
+            <div style="padding-right:100px">
+                <a href="/logout" style="float:right;">Logout</a>
+                <a href="/cart" style="float:right;">Cart</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                
+                <%if(userType == "Driver"){%>
+                    <p style="color: white;float:left;">Point Balance: (<%=userBalance%>)</p>
+                <%}%>
+                <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
+                
+            </div>
+            
+          </div>
+          <br><br>
+          <center>
+          <%if(userObj.User_Type == "Sponsor" || userObj.User_Type == "Admin"){%>
+            <p>currently viewing as a <%=userType%></p>
+          <form action="/changeUserType" method="POST">
+          <select id="cars" name="usertype">
+          <option value="Sponsor">Sponsor</option>
+          <option value="Driver">Driver</option>
+          <%if(userObj.User_Type == "Admin"){%>
+            <option value="Admin">Admin</option>
+            <%}%>
+          </select>
+          <input type="submit" value="Change View"/>
+            </form>
+          <%}%>
+        </center>
+        <center>
+            <a href="/notifications"> Notification Settings</a> 
+            </center>
+        <br>
+        </center>
+        
+        </center>
+        <div style="margin-right:30%;margin-left:30%;padding-bottom:30px;">
+            <center>
+
+            <input type="text" placeholder="search" style="display: inline;width:80%;padding: 7px;font-size: 17px;vertical-align: middle;" name="searchText" id="searchText"/>
+            <button style="display: inline;" id="search" Onclick="Search()">Search</button>
+
+    </center>
+    
+        <br><br>
+        
+        
+    <div class='onesignal-customlink-container'></div>
+    </div>
+        <div style ="background-color: white;margin-left:10%;margin-right:10%;">
+    </div>
+        <div style ="background-color: white;margin-left:10%;margin-right:10%;">
+        <%if(userSQL){%>
+        <%if(userSQL[0].Application_Status == "Complete"){%>
+        <%
+        if(ebayObj){%>
+        <%for(let i = 0; i < ebayObj[0].searchResult[0].item.length; i++){
+            if(ebayObj[0].searchResult[0].item[i].galleryURL){%>
+                <%if(i == ebayObj[0].searchResult[0].item.length - 1){%>
+                <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                    <%}else{%>
+                        <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                        <%}%>
+                <span style="width:200px;height:200px;">
+                <img style="display: inline-block;width:inherit;vertical-align:middle;border-style: solid;border-width:1px;border-top-width:0px;border-bottom-width:0px;border-left:2px;border-color:#eaeaea;" src = "<%=ebayObj[0].searchResult[0].item[i].galleryURL[0]%>">
+                </span>
+                <div style="display: inline-block;">
+                    <a href = "/product?id=<%=ebayObj[0].searchResult[0].item[i].itemId[0]%>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
+                    <%if(ebayObj[0].searchResult[0].item[i].condition){%>
+                    <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
+                    <%}%>
+                    <%if(ebayObj[0].searchResult[0].item[i].subtitle){%>
+                    <p><%=ebayObj[0].searchResult[0].item[i].subtitle[0]%></p>
+                    <%}%>
+                    <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
+                </div>
+                </div>
+         <%}else{%>
+            <%if(i == ebayObj[0].searchResult[0].item.length - 1){%>
+                <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:0px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                    <%}else{%>
+                        <div style="border-style: solid;border-width:2px;border-top-width:0px;border-bottom-width:3px;border-left-width: 0px;border-right-width: 0px;border-color:#eaeaea;">
+                        <%}%>
+                    <span style="width:200px;height:200px;">
+                        <img style="width:inherit;vertical-align:middle;border-style: solid;border-width:1px;border-top-width:0px;border-bottom-width:0px;border-left:2px;border-color:#eaeaea;" src = "https://secureir.ebaystatic.com/pictures/aw/pics/stockimage1.jpg">
+                        <div style="display: inline-block;">
+                            <a href = "/product?id=<%=ebayObj[0].searchResult[0].item[i].itemId[0]%>" style="color:#0000EE;font-weight:bold;text-decoration: none;"><%=ebayObj[0].searchResult[0].item[i].title[0]%></a>
+                            <p style = "color:#828282;font-style:italic;"><%=ebayObj[0].searchResult[0].item[i].condition[0].conditionDisplayName%></p>
+                            <p style="font-weight: bolder; font-size:22px;"><%=parseFloat(ebayObj[0].searchResult[0].item[i].sellingStatus[0].currentPrice[0].__value__)%> Points</p>
+                        </div>
+                </div>
+         <%}}%>
+        </div>
+        <center>
+        <div style="padding-bottom:100px;padding-top: 20px;">
+            <table style="margin-left: auto;margin-right: auto;font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;">
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="PreviousPage();" >&#8249;</button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-4" Onclick="JumpPage(-4);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-3" Onclick="JumpPage(-3);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-2" Onclick="JumpPage(-2);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle-1" Onclick="JumpPage(-1);" ></button></th>
+                <th><button style="font-size:40px;background-color: #144879;color:white;font-weight: bold;"type="button" id="middle" Onclick="JumpPage(0);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+1" Onclick="JumpPage(1);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+2" Onclick="JumpPage(2);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+3" Onclick="JumpPage(3);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="middle+4" Onclick="JumpPage(4);" ></button></th>
+                <th><button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="NextPage();">&#8250;</button></th>
+            </table>
+            <input id="jump" placeholder="#" size="2" style="font-size:30px;">
+            <button style="font-size:40px;background-color: #5eadb0;color:white;font-weight: bold;"type="button" id="login-button" Onclick="JumpPageText();">&#8250;</button>
+        </div>
+        </center>
+        <%}else{%>
+            <center>
+            <p style="padding-top: 50px;padding-bottom: 50px;">no search results were found</p>
+            </center>
+            <%}%>
+            <%}else{%>
+                <p>Your company has not accepted your application yet</p>
+                <%}%>
+            <%}else{%>
+                <p>You must join a company before you can view the catalog</p>
+                <%}%>
+
+        
+    </body>
+</html>
+

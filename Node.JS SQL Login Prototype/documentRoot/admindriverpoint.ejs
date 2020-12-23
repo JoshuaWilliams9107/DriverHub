@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial;
+            }
+           #topnav {
+                
+                overflow: hidden;
+                background-color: #333;
+            }
+
+            #topnav a {
+                color: #f2f2f2;
+                text-align: center;
+                padding: 21px 16px;
+                text-decoration: none;
+                font-size: 17px;
+
+            }
+
+            #topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            #topnav a.active {
+                background-color:#5eadff;
+                color:black;
+                font-weight:bold;
+                
+            }
+            .floatright{
+                float:right;
+            }
+            .floatleft{
+                float:left;
+            }
+            #search{
+                font-family: 'Arial';
+                background-color: #5eadb0; /* Green */
+                border: 0;
+                color: white;
+                height:37px;
+                width:72px;
+                text-align: left;
+                font-weight: bold;
+                display: inline;
+                padding: 7px;
+                font-size: 17px;
+                vertical-align: middle;
+            }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="topnav">
+            <p style="padding-left: 50px;padding-right: 50px; font-weight:bold;font-size:20px;color: white; text-shadow: 4px 4px black"" class="floatleft">Driver Hub</p>
+            
+            <a href="/home" class="active" style="float:left;">Home</a>
+            <p style="float:right;" style="padding-right: 100px;"></p>
+            <div style="margin-left:auto; margin-right:auto;overflow:hidden;display: inline;float: left;padding-left:50px;padding-top:13px;">
+                
+            </div>
+            <div style="padding-right:100px">
+                <a href="/logout" style="float:right;">Logout</a>
+                <a href="/cart" style="float:right;">Cart</a>
+                <a href="/mysponsor" style="float:right;">My Sponsor</a>
+                <a href="/profile" style="float:right;">My Profile (<%=username%>)</a>
+                <a href="/reports" style="float:right;">Reports</a>
+
+            </div>
+            
+          </div>
+          <br><br>
+        </center>
+        <center>
+            <table style="margin-left: auto;margin-right: auto;">
+                <tr>
+                  <th>DriverName</th>
+                  <th>Sponsor Name</th>
+                  <th>Points</th> 
+                  <th>Add Points</th>
+                </tr>
+                <%
+                for(let i = 0; i < drivers.length; i++){
+                    %><tr>
+                        <td><%=drivers[i].Username%></td>
+                        
+                        <td><%=CompanyArr[i].Company_Name%></td>
+                        <td><%=Driver_To_Company[i].Point_Balance%></td>
+                        <td><form method = "POST" action="/submit-form-addpoints">
+                            <label for="pointsToAdd">Points to add:</label>
+                            <input type="text" name="pointsToAdd">
+                            <input type="hidden" name="driverID" value= <%=Driver_To_Company[i].idUser%> >
+                            <input type="hidden" name="companyID" value= <%=Driver_To_Company[i].Company_Id%> >
+                            <input type="submit" value="Submit">
+                          </form></td>
+                    </tr><%
+                }
+                %>
+            </table> 
+
+        </center>
+    </body>
+</html>
+

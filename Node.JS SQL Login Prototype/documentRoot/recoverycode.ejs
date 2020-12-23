@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Prototype HTML Login</title>
+	<style>
+		
+		input, input[placehorder] {
+			font-family: 'Arial';
+			text-align: center;
+			height:40px;
+			outline: none;
+			background-color: whitesmoke;
+			border: 0;
+		}
+		input:focus {
+			text-align: center;
+			height:40px;
+			border: 0;
+		}
+		body{
+			background-color: #2b2727;
+			font-family: 'Arial';
+		}
+		label{
+			font-size: 150%;
+			border: 2px solid black;
+		}
+		input{
+			font-size: 150%;
+		}
+		#error{
+			font-size: 150%;
+			color:red;
+		}
+		#loginPage{
+			background-color: white;
+			width: 350px;
+			padding-bottom: 25px;
+			padding-top: 12.5px;
+			box-shadow:10px 10px 30px black;  
+		}
+		#submit{
+			font-family: 'Arial';
+			background-color: #5eadb0; /* Green */
+			border: 0;
+			color: white;
+			height:50px;
+			width:300px;
+			text-align: center;
+			font-weight: bold;
+			display: inline-block;
+			font-size:  28px;
+		}
+		#submit:hover {
+			background-color: #00b7bc;
+		}
+		#submit:focus {
+			border: 0;
+		}
+		a:visited{
+			color: #0000EE;
+		}
+	</style>
+	<script>
+		function init() {
+			var url = window.location.href;
+			 if (url.split("?")[1] === "code=false") 
+			{ 
+				let error = document.createElement("p");
+				error.id = "error";
+				error.innerHTML = "Recovery Code is not valid"; 
+				document.getElementById("info").appendChild(error);
+			}
+		}
+	</script>
+</head>
+<body onload="init()">
+	<center><h1 style="font-size:42px;padding-top:125px;color: white; text-shadow: 4px 4px black"">Driver Hub</h1></center>
+	
+	<center style="padding-top:25px;">
+		
+		<div id = "loginPage">
+				<h1 style="font-weight: bold;">Reset Password</h1>
+
+		<form method="POST" action="/submit-form-recover-code">
+			<!--<label for="username" >Username:</label><br>-->
+			<p id = "info">Enter recovery code.</p>
+			
+  			<input type="text" name="code" placeholder="recovery code" /><br><br>
+  			<button id="submit">Submit</button>
+		</form>
+		<br>
+		
+	</div>
+	
+	</center>
+
+	
+	
+
+</body>
+
+</html>
