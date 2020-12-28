@@ -13,7 +13,7 @@ This project involved the creation of a web-app for the trucking industry.  Spon
 * [Javascript](https://www.javascript.com/)
 * [EJS (Embedded Javascript Templating)](https://ejs.co/)
 * [Ebay API](https://developer.ebay.com/)
-* [Node.JS] (https://nodejs.org/en/)
+* [Node.JS](https://nodejs.org/en/)
 * [AWS (EC2 and RDS instances)](https://aws.amazon.com/)
 * [MySQL](https://www.mysql.com/)
 
