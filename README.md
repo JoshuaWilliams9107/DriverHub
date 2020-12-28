@@ -1,5 +1,5 @@
 # Driver Hub
-A website that allows truck drivers to earn points for good driving behavior.  The drivers can then use those points to buy products in an on-website customizable store.
+A website that allows truck drivers to earn points for good driving behavior.  The drivers can then use those points to buy products in a customizable company store.
 
 ## - About the Development of this Project -
 This Semester-long Project was worked on by me (Joshua Williams), Jordan Wilson, and Anthony Frazier with me as the group leader for Professional Issues II.  We were given requirements and recieved requirements changes throughout the project.  To manage the development of this project we used Azure Devops to create user stories based on the requirements on the assignment.  We then followed Agile development methodologies by having 1 week sprints where we met at the beginning of the sprint and each selected some of those user stories that we deemed to be most important to finish at that time and added them to the current sprint.  We then had a sprint review session after the sprint was over, reflected on the previous sprint, and repeated the process.  There were 10 sprints in total and by the end of the 10th sprint we had a polished working product that we delivered and demonstrated to the client (the professor).
