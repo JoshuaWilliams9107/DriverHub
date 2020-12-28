@@ -8,14 +8,14 @@ This Semester-long Project was worked on by me (Joshua Williams), Jordan Wilson,
 This project involved the creation of a web-app for the trucking industry.  Sponsors can create a sponsor account and then create a company to associate with that sponsor account.  The sponsor can then manage their catalog of items that is fetched using the Ebay API by blacklisting and selecting categories.  Sponsors also can add drivers to their company through either an invite code or by directly making new driver accounts to be associated with that company.  Sponsors also can reward drivers points based on good-driving behavior and drivers can use those points to purchase products in their sponsor's catalog.  Sponsors can also generate reports on purchases as well as manage their company.  There are also Admin accounts that can just generally manage everyone on the website using a web interface.  Furthermore, Sponsors and Drivers also have profiles where they can edit their account settings and information.
 
 ## - Build With -
-* HTML
-* CSS
-* Javascript
-* EJS (Embedded Javascript Templating)
-* Ebay API
-* Node.JS
-* AWS (EC2 and RDS instances)
-* MySQL
+* [HTML](https://en.wikipedia.org/wiki/HTML)
+* [CSS](https://en.wikipedia.org/wiki/CSS)
+* [Javascript](https://www.javascript.com/)
+* [EJS (Embedded Javascript Templating)](https://ejs.co/)
+* [Ebay API](https://developer.ebay.com/)
+* [Node.JS] (https://nodejs.org/en/)
+* [AWS (EC2 and RDS instances)](https://aws.amazon.com/)
+* [MySQL](https://www.mysql.com/)
 
 ## - Installation -
 * Install Node.js
